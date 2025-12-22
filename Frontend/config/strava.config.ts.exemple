@@ -1,0 +1,9 @@
+export const STRAVA_CONFIG = {
+  CLIENT_ID: '',
+  CLIENT_SECRET: '',
+  AUTHORIZATION_ENDPOINT: 'https://www.strava.com/oauth/mobile/authorize',
+  TOKEN_ENDPOINT: 'https://www.strava.com/oauth/token',
+  REVOKE_ENDPOINT: 'https://www.strava.com/oauth/deauthorize',
+  API_BASE_URL: 'https://www.strava.com/api/v3',
+  SCOPES: ['activity:read'],
+};
