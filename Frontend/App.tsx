@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import StravaLoginScreen from './screens/StravaLoginScreen';
 import StravaProfileScreen from './screens/StravaProfileScreen';
@@ -69,7 +70,9 @@ function MainTabs() {
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <>
+      <StatusBar barStyle="light-content" backgroundColor="#1a1a1a" translucent={false} />
+      <NavigationContainer>
       <Stack.Navigator
         initialRouteName="StravaLogin"
         screenOptions={{
@@ -94,5 +97,6 @@ export default function App() {
         />
       </Stack.Navigator>
     </NavigationContainer>
+    </>
   );
 }
