@@ -1,20 +1,22 @@
 import { Request, Response } from 'express';
-import openaiService from '../services/openaiService';
+import geminiService from '../services/geminiService';
 
 export const generateTrainingPlan = async (req: Request, res: Response) => {
   try {
-    const { course_label, course_type, frequency, duration } = req.body;
+    const { course_label, course_type, course_km, course_elevation, frequency, duration } = req.body;
 
-    if (!course_label || !course_type || !frequency || !duration) {
+    if (!course_label || !course_type || !course_km || !course_elevation || !frequency || !duration) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required fields: course_label, course_type, frequency, duration',
+        message: 'Missing required fields: course_label, course_type, course_km, course_elevation, frequency, duration',
       });
     }
 
-    const trainingPlan = await openaiService.generateTrainingPlan({
+    const trainingPlan = await geminiService.generateTrainingPlan({
       course_label,
       course_type,
+      course_km,
+      course_elevation,
       frequency,
       duration,
     });

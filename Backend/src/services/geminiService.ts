@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import config from '../config/config';
 import fs from 'fs';
 import path from 'path';
@@ -6,6 +6,8 @@ import path from 'path';
 interface TrainingPlanInput {
   course_label: string;
   course_type: string;
+  course_km: string;
+  course_elevation: string;
   frequency: string;
   duration: string;
 }
@@ -43,19 +45,17 @@ interface TrainingPlanResponse {
   general_recommendations: string[];
 }
 
-class OpenAIService {
-  private client: OpenAI;
+class GeminiService {
+  private genAI: GoogleGenerativeAI;
   private systemPrompt: string;
   private userPromptTemplate: string;
 
   constructor() {
-    if (!config.openaiApiKey) {
-      throw new Error('OPENAI_API_KEY is not configured');
+    if (!config.geminiApiKey) {
+      throw new Error('GEMINI_API_KEY is not configured');
     }
 
-    this.client = new OpenAI({
-      apiKey: config.openaiApiKey,
-    });
+    this.genAI = new GoogleGenerativeAI(config.geminiApiKey);
 
     this.systemPrompt = fs.readFileSync(
       path.join(__dirname, '../prompts/training-plan-system.txt'),
@@ -73,40 +73,52 @@ class OpenAIService {
 
     return this.userPromptTemplate
       .replace(/\{\{course_label\}\}/g, planData.course_label)
+      .replace(/\{\{course_km\}\}/g, planData.course_km)
+      .replace(/\{\{course_elevation\}\}/g, planData.course_elevation)
       .replace(/\{\{course_type\}\}/g, courseTypeLabel)
       .replace(/\{\{frequency\}\}/g, planData.frequency)
       .replace(/\{\{duration\}\}/g, planData.duration)
-      .replace(/\{\{course_type_value\}\}/g, planData.course_type);
+      .replace(/\{\{course_type_value\}\}/g, planData.course_type)
+      .replace(/\{\{activities\}\}/g, 'Aucune activité récente');
   }
 
   async generateTrainingPlan(planData: TrainingPlanInput): Promise<TrainingPlanResponse> {
     try {
+      console.log('Generating training plan with data:', planData);
       const userPrompt = this.generateUserPrompt(planData);
+      const fullPrompt = `${this.systemPrompt}\n\n${userPrompt}`;
 
-      const completion = await this.client.chat.completions.create({
-        model: 'gpt-5.2-pro',
-        messages: [
-          { role: 'system', content: this.systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        response_format: { type: 'json_object' },
-        temperature: 0.7,
+      console.log('Using Gemini model: gemini-2.0-flash-exp');
+      const model = this.genAI.getGenerativeModel({
+        model: 'gemini-2.0-flash-exp',
+        generationConfig: {
+          temperature: 0.7,
+          responseMimeType: 'application/json',
+        },
       });
 
-      const content = completion.choices[0]?.message?.content;
+      console.log('Sending request to Gemini...');
+      const result = await model.generateContent(fullPrompt);
+      const response = result.response;
+      const content = response.text();
 
+      console.log('Received response from Gemini');
       if (!content) {
-        throw new Error('No response from OpenAI');
+        throw new Error('No response from Gemini');
       }
 
+      console.log('Parsing JSON response...');
       const trainingPlan: TrainingPlanResponse = JSON.parse(content);
 
       return trainingPlan;
     } catch (error) {
       console.error('Error generating training plan:', error);
-      throw new Error('Failed to generate training plan');
+      if (error instanceof Error) {
+        throw new Error(`Failed to generate training plan: ${error.message}`);
+      }
+      throw error;
     }
   }
 }
 
-export default new OpenAIService();
+export default new GeminiService();
