@@ -14,5 +14,9 @@ export const API_CONFIG = {
       ACTIVITIES: '/strava/activities',
       ACTIVITY: (id: number) => `/strava/activities/${id}`,
     },
+    TRAINING: {
+      GENERATE: '/training/generate',
+      MOCK: '/training/mock',
+    },
   },
 };
