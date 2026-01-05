@@ -217,10 +217,8 @@ export default function PlanScreen() {
   const renderWeek = (week: Week) => (
     <View key={`week-${week.week_number}`} style={styles.weekContainer}>
       <View style={styles.weekHeader}>
-        <View style={styles.weekTitleRow}>
-          <Ionicons name="calendar" size={24} color="#FF6B35" />
-          <Text style={styles.weekTitle}>Semaine {week.week_number}</Text>
-        </View>
+        <Text style={styles.weekTitle}>S{week.week_number}</Text>
+        <View style={styles.weekDivider} />
         <Text style={styles.weekFocus}>{week.focus}</Text>
       </View>
       {week.sessions.map((session) => renderSession(session, week.week_number))}
@@ -500,31 +498,33 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   weekContainer: {
-    marginBottom: 30,
+    marginBottom: 25,
   },
   weekHeader: {
-    backgroundColor: 'rgba(252, 76, 2, 0.15)',
-    padding: 15,
-    borderRadius: 10,
-    borderLeftWidth: 4,
-    borderLeftColor: '#FF6B35',
-    marginBottom: 15,
-  },
-  weekTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    marginBottom: 8,
+    gap: 12,
+    marginBottom: 12,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(252, 76, 2, 0.2)',
   },
   weekTitle: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#FF6B35',
+    minWidth: 30,
+  },
+  weekDivider: {
+    width: 1,
+    height: 14,
+    backgroundColor: 'rgba(252, 76, 2, 0.3)',
   },
   weekFocus: {
-    fontSize: 14,
-    color: '#b0b0b0',
+    fontSize: 12,
+    color: '#999',
     fontStyle: 'italic',
+    flex: 1,
   },
   sessionCard: {
     backgroundColor: 'rgba(45, 45, 45, 0.7)',
