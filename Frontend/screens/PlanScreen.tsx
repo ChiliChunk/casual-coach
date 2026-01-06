@@ -6,6 +6,25 @@ import { storageService, TrainingPlan, TrainingSchedule } from '../services/stor
 import { API_CONFIG } from '../config/api.config';
 import stravaService from '../services/stravaService';
 
+interface Exercise {
+  name: string;
+  details: string;
+}
+
+interface Session {
+  session_number: number;
+  title: string;
+  description: string;
+  intensity: string;
+  exercises: Exercise[];
+}
+
+interface Week {
+  week_number: number;
+  focus: string;
+  sessions: Session[];
+}
+
 export default function PlanScreen() {
   const [hasPlan, setHasPlan] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
