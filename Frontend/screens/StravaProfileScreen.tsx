@@ -11,12 +11,14 @@ import {
   RefreshControl,
 } from 'react-native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { CompositeNavigationProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainTabParamList } from '../App';
 import stravaService, { StravaAthlete, StravaActivity } from '../services/stravaService';
 
-type StravaProfileScreenNavigationProp = BottomTabNavigationProp<
-  MainTabParamList,
-  'Profile'
+type StravaProfileScreenNavigationProp = CompositeNavigationProp<
+  BottomTabNavigationProp<MainTabParamList, 'Profile'>,
+  NativeStackNavigationProp<any>
 >;
 
 type Props = {
@@ -75,7 +77,7 @@ export default function StravaProfileScreen({ navigation }: Props) {
           style: 'destructive',
           onPress: async () => {
             await stravaService.logout();
-            navigation.replace('StravaLogin');
+            navigation.navigate('StravaLogin');
           },
         },
       ]

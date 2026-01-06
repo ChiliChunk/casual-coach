@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import config from '../config/config';
 import fs from 'fs';
 import path from 'path';
-import { StravaActivity } from './stravaService';
+import { FilteredActivity} from './stravaService';
 
 interface TrainingPlanInput {
   course_label: string;
@@ -11,7 +11,7 @@ interface TrainingPlanInput {
   course_elevation: string;
   frequency: string;
   duration: string;
-  activities?: StravaActivity[];
+  activities?: FilteredActivity[];
 }
 
 interface TrainingSession {
@@ -70,13 +70,13 @@ class GeminiService {
     );
   }
 
-  private formatActivities(activities?: StravaActivity[]): string {
+  private formatActivities(activities?: FilteredActivity[]): string {
     if (!activities || activities.length === 0) {
       return 'Aucune activité récente disponible';
     }
 
     const formatted = activities.map((activity, index) => {
-      const date = new Date(activity.start_date_local).toLocaleDateString('fr-FR');
+      const date = new Date(activity.start_date).toLocaleDateString('fr-FR');
       const distanceKm = (activity.distance / 1000).toFixed(2);
       const durationMin = Math.round(activity.moving_time / 60);
       const paceMinPerKm = activity.distance > 0 

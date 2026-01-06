@@ -33,6 +33,18 @@ export interface StravaActivity {
   };
 }
 
+export interface FilteredActivity {
+  name: string;
+  distance: number;
+  moving_time: number;
+  total_elevation_gain: number;
+  type: string;
+  sport_type: string;
+  start_date: string;
+  average_speed: number;
+  average_heartrate?: number;
+}
+
 export interface StravaTokenResponse {
   token_type: string;
   expires_at: number;
