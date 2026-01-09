@@ -126,6 +126,31 @@ export default function PlanScreen() {
     }
   };
 
+  const handleToggleSessionDone = async (weekNumber: number, sessionNumber: number) => {
+    if (!trainingSchedule) return;
+
+    const updatedSchedule = {
+      ...trainingSchedule,
+      weeks: trainingSchedule.weeks.map(week => {
+        if (week.week_number === weekNumber) {
+          return {
+            ...week,
+            sessions: week.sessions.map(session => {
+              if (session.session_number === sessionNumber) {
+                return { ...session, done: !session.done };
+              }
+              return session;
+            }),
+          };
+        }
+        return week;
+      }),
+    };
+
+    setTrainingSchedule(updatedSchedule);
+    await storageService.saveTrainingSessions(updatedSchedule);
+  };
+
   if (showCreateForm) {
     return (
       <Modal
@@ -181,6 +206,7 @@ export default function PlanScreen() {
         {trainingSchedule && (
           <TrainingActivities
             trainingSchedule={trainingSchedule}
+            onToggleDone={handleToggleSessionDone}
           />
         )}
       </View>

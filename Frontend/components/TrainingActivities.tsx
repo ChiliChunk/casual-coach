@@ -14,6 +14,7 @@ interface Session {
   description: string;
   intensity: string;
   exercises: Exercise[];
+  done?: boolean;
 }
 
 interface Week {
@@ -24,9 +25,10 @@ interface Week {
 
 interface TrainingActivitiesProps {
   trainingSchedule: TrainingSchedule;
+  onToggleDone: (weekNumber: number, sessionNumber: number) => void;
 }
 
-export default function TrainingActivities({ trainingSchedule }: TrainingActivitiesProps) {
+export default function TrainingActivities({ trainingSchedule, onToggleDone }: TrainingActivitiesProps) {
   const [expandedSessions, setExpandedSessions] = useState<Set<string>>(new Set());
 
   const getIntensityColor = (intensity: string) => {
@@ -62,13 +64,30 @@ export default function TrainingActivities({ trainingSchedule }: TrainingActivit
     return (
       <TouchableOpacity 
         key={sessionId} 
-        style={styles.sessionCard}
+        style={[styles.sessionCard, session.done && styles.sessionCardDone]}
         onPress={() => toggleSession(weekNumber, session.session_number)}
         activeOpacity={0.7}
       >
         <View style={styles.sessionHeader}>
           <View style={styles.sessionTitleRow}>
-            <Text style={styles.sessionNumber}>Séance {session.session_number}</Text>
+            <View style={styles.sessionTitleLeft}>
+              <TouchableOpacity 
+                onPress={(e) => {
+                  e.stopPropagation();
+                  onToggleDone(weekNumber, session.session_number);
+                }}
+                style={styles.checkboxContainer}
+              >
+                <Ionicons 
+                  name={session.done ? "checkmark-circle" : "ellipse-outline"} 
+                  size={24} 
+                  color={session.done ? "#4CAF50" : "#666"} 
+                />
+              </TouchableOpacity>
+              <Text style={[styles.sessionNumber, session.done && styles.sessionNumberDone]}>
+                Séance {session.session_number}
+              </Text>
+            </View>
             <View style={styles.sessionTitleRowRight}>
               <View style={[styles.intensityBadge, { backgroundColor: getIntensityColor(session.intensity) }]}>
                 <Text style={styles.intensityText}>{session.intensity}</Text>
@@ -80,7 +99,7 @@ export default function TrainingActivities({ trainingSchedule }: TrainingActivit
               />
             </View>
           </View>
-          <Text style={styles.sessionTitle}>{session.title}</Text>
+          <Text style={[styles.sessionTitle, session.done && styles.sessionTitleDone]}>{session.title}</Text>
           <Text style={styles.sessionDescription} numberOfLines={isExpanded ? undefined : 2}>
             {session.description}
           </Text>
@@ -179,6 +198,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(252, 76, 2, 0.2)',
   },
+  sessionCardDone: {
+    backgroundColor: 'rgba(30, 40, 60, 0.5)',
+    borderColor: 'rgba(33, 150, 243, 0.3)',
+    opacity: 0.7,
+  },
   sessionHeader: {
     marginBottom: 12,
   },
@@ -187,6 +211,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 8,
+  },
+  sessionTitleLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  checkboxContainer: {
+    padding: 4,
   },
   sessionTitleRowRight: {
     flexDirection: 'row',
@@ -197,6 +229,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#b0b0b0',
     fontWeight: '600',
+  },
+  sessionNumberDone: {
+    textDecorationLine: 'line-through',
+    color: '#666',
   },
   intensityBadge: {
     paddingHorizontal: 10,
@@ -214,6 +250,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#ffffff',
     marginBottom: 6,
+  },
+  sessionTitleDone: {
+    textDecorationLine: 'line-through',
+    color: '#999',
   },
   sessionDescription: {
     fontSize: 13,

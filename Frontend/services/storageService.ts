@@ -24,6 +24,7 @@ export interface Session {
   intensity: string;
   description: string;
   exercises: Exercise[];
+  done?: boolean;
 }
 
 export interface Week {
