@@ -1,71 +1,54 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { TrainingSchedule } from '../services/storageService';
-
-interface Exercise {
-  name: string;
-  details: string;
-}
-
-interface Session {
-  session_number: number;
-  title: string;
-  description: string;
-  intensity: string;
-  exercises: Exercise[];
-  done?: boolean;
-}
-
-interface Week {
-  week_number: number;
-  focus: string;
-  sessions: Session[];
-}
+import { TrainingSchedule, Exercise, Session, Week } from '../services/storageService';
 
 interface TrainingActivitiesProps {
   trainingSchedule: TrainingSchedule;
   onToggleDone: (weekNumber: number, sessionNumber: number) => void;
 }
 
-export default function TrainingActivities({ trainingSchedule, onToggleDone }: TrainingActivitiesProps) {
-  const [expandedSessions, setExpandedSessions] = useState<Set<string>>(new Set());
+interface SessionCardProps {
+  session: Session;
+  weekNumber: number;
+  isExpanded: boolean;
+  onToggleExpanded: () => void;
+  onToggleDone: () => void;
+  getIntensityColor: (intensity: string) => string;
+}
 
-  const getIntensityColor = (intensity: string) => {
-    switch (intensity.toLowerCase()) {
-      case 'élevée':
-        return '#FF6B35';
-      case 'modérée':
-        return '#FFA500';
-      case 'faible':
-        return '#4CAF50';
-      default:
-        return '#999';
-    }
-  };
+function SessionCard({ session, weekNumber, isExpanded, onToggleExpanded, onToggleDone, getIntensityColor }: SessionCardProps) {
+  const animatedValue = useRef(new Animated.Value(session.done ? 1 : 0)).current;
 
-  const toggleSession = (weekNumber: number, sessionNumber: number) => {
-    const sessionId = `week-${weekNumber}-session-${sessionNumber}`;
-    setExpandedSessions(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(sessionId)) {
-        newSet.delete(sessionId);
-      } else {
-        newSet.add(sessionId);
-      }
-      return newSet;
-    });
-  };
+  useEffect(() => {
+    Animated.timing(animatedValue, {
+      toValue: session.done ? 1 : 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  }, [session.done]);
 
-  const renderSession = (session: Session, weekNumber: number) => {
-    const sessionId = `week-${weekNumber}-session-${session.session_number}`;
-    const isExpanded = expandedSessions.has(sessionId);
+  const backgroundColor = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['rgba(45, 45, 45, 0.7)', 'rgba(30, 40, 60, 0.5)'],
+  });
 
-    return (
+  const borderColor = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['rgba(252, 76, 2, 0.2)', 'rgba(33, 150, 243, 0.3)'],
+  });
+
+  const opacity = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0.7],
+  });
+
+  return (
+    <Animated.View style={[styles.sessionCard, { backgroundColor, borderColor, opacity }]}>
       <TouchableOpacity 
-        key={sessionId} 
-        style={[styles.sessionCard, session.done && styles.sessionCardDone]}
-        onPress={() => toggleSession(weekNumber, session.session_number)}
+        onPress={onToggleExpanded}
+        onLongPress={onToggleDone}
+        delayLongPress={300}
         activeOpacity={0.7}
       >
         <View style={styles.sessionHeader}>
@@ -74,7 +57,7 @@ export default function TrainingActivities({ trainingSchedule, onToggleDone }: T
               <TouchableOpacity 
                 onPress={(e) => {
                   e.stopPropagation();
-                  onToggleDone(weekNumber, session.session_number);
+                  onToggleDone();
                 }}
                 style={styles.checkboxContainer}
               >
@@ -119,6 +102,53 @@ export default function TrainingActivities({ trainingSchedule, onToggleDone }: T
           </View>
         )}
       </TouchableOpacity>
+    </Animated.View>
+  );
+}
+
+export default function TrainingActivities({ trainingSchedule, onToggleDone }: TrainingActivitiesProps) {
+  const [expandedSessions, setExpandedSessions] = useState<Set<string>>(new Set());
+
+  const getIntensityColor = (intensity: string) => {
+    switch (intensity.toLowerCase()) {
+      case 'élevée':
+        return '#FF6B35';
+      case 'modérée':
+        return '#FFA500';
+      case 'faible':
+        return '#4CAF50';
+      default:
+        return '#999';
+    }
+  };
+
+  const toggleSession = (weekNumber: number, sessionNumber: number) => {
+    const sessionId = `week-${weekNumber}-session-${sessionNumber}`;
+    setExpandedSessions(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(sessionId)) {
+        newSet.delete(sessionId);
+      } else {
+        newSet.add(sessionId);
+      }
+      return newSet;
+    });
+  };
+
+  const renderSession = (session: Session, weekNumber: number) => {
+    const sessionId = `week-${weekNumber}-session-${session.session_number}`;
+    const isExpanded = expandedSessions.has(sessionId);
+
+    return (
+      <SessionCard
+        key={sessionId}
+        session={session}
+        weekNumber={weekNumber}
+        isExpanded={isExpanded}
+        onToggleExpanded={() => toggleSession(weekNumber, session.session_number)}
+        onToggleDone={() => onToggleDone(weekNumber, session.session_number)}
+        getIntensityColor={getIntensityColor}
+      />
     );
   };
 
@@ -191,12 +221,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sessionCard: {
-    backgroundColor: 'rgba(45, 45, 45, 0.7)',
     borderRadius: 10,
     padding: 15,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: 'rgba(252, 76, 2, 0.2)',
   },
   sessionCardDone: {
     backgroundColor: 'rgba(30, 40, 60, 0.5)',
