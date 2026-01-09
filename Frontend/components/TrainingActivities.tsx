@@ -1,0 +1,247 @@
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { TrainingSchedule } from '../services/storageService';
+
+interface Exercise {
+  name: string;
+  details: string;
+}
+
+interface Session {
+  session_number: number;
+  title: string;
+  description: string;
+  intensity: string;
+  exercises: Exercise[];
+}
+
+interface Week {
+  week_number: number;
+  focus: string;
+  sessions: Session[];
+}
+
+interface TrainingActivitiesProps {
+  trainingSchedule: TrainingSchedule;
+}
+
+export default function TrainingActivities({ trainingSchedule }: TrainingActivitiesProps) {
+  const [expandedSessions, setExpandedSessions] = useState<Set<string>>(new Set());
+
+  const getIntensityColor = (intensity: string) => {
+    switch (intensity.toLowerCase()) {
+      case 'élevée':
+        return '#FF6B35';
+      case 'modérée':
+        return '#FFA500';
+      case 'faible':
+        return '#4CAF50';
+      default:
+        return '#999';
+    }
+  };
+
+  const toggleSession = (weekNumber: number, sessionNumber: number) => {
+    const sessionId = `week-${weekNumber}-session-${sessionNumber}`;
+    setExpandedSessions(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(sessionId)) {
+        newSet.delete(sessionId);
+      } else {
+        newSet.add(sessionId);
+      }
+      return newSet;
+    });
+  };
+
+  const renderSession = (session: Session, weekNumber: number) => {
+    const sessionId = `week-${weekNumber}-session-${session.session_number}`;
+    const isExpanded = expandedSessions.has(sessionId);
+
+    return (
+      <TouchableOpacity 
+        key={sessionId} 
+        style={styles.sessionCard}
+        onPress={() => toggleSession(weekNumber, session.session_number)}
+        activeOpacity={0.7}
+      >
+        <View style={styles.sessionHeader}>
+          <View style={styles.sessionTitleRow}>
+            <Text style={styles.sessionNumber}>Séance {session.session_number}</Text>
+            <View style={styles.sessionTitleRowRight}>
+              <View style={[styles.intensityBadge, { backgroundColor: getIntensityColor(session.intensity) }]}>
+                <Text style={styles.intensityText}>{session.intensity}</Text>
+              </View>
+              <Ionicons 
+                name={isExpanded ? "chevron-up" : "chevron-down"} 
+                size={20} 
+                color="#b0b0b0" 
+              />
+            </View>
+          </View>
+          <Text style={styles.sessionTitle}>{session.title}</Text>
+          <Text style={styles.sessionDescription} numberOfLines={isExpanded ? undefined : 2}>
+            {session.description}
+          </Text>
+        </View>
+
+        {isExpanded && (
+          <View style={styles.exercisesContainer}>
+            {session.exercises.map((exercise, index) => (
+              <View key={`exercise-${index}`} style={styles.exerciseItem}>
+                <Ionicons name="fitness-outline" size={16} color="#FF6B35" />
+                <View style={styles.exerciseContent}>
+                  <Text style={styles.exerciseName}>{exercise.name}</Text>
+                  <Text style={styles.exerciseDetails}>{exercise.details}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+      </TouchableOpacity>
+    );
+  };
+
+  const renderWeek = (week: Week) => (
+    <View key={`week-${week.week_number}`} style={styles.weekContainer}>
+      <View style={styles.weekHeader}>
+        <Text style={styles.weekTitle}>S{week.week_number}</Text>
+        <View style={styles.weekDivider} />
+        <Text style={styles.weekFocus}>{week.focus}</Text>
+      </View>
+      {week.sessions.map((session) => renderSession(session, week.week_number))}
+    </View>
+  );
+
+  return (
+    <View style={styles.scheduleContainer}>
+      <View style={styles.scheduleHeader}>
+        <Text style={styles.scheduleTitle}>Programme d'entraînement</Text>
+      </View>
+      {trainingSchedule.weeks.map((week) => renderWeek(week))}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  scheduleContainer: {
+    marginTop: 30,
+  },
+  scheduleHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+    paddingBottom: 15,
+    borderBottomWidth: 2,
+    borderBottomColor: 'rgba(252, 76, 2, 0.3)',
+  },
+  scheduleTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  weekContainer: {
+    marginBottom: 25,
+  },
+  weekHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 12,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(252, 76, 2, 0.2)',
+  },
+  weekTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#FF6B35',
+    minWidth: 30,
+  },
+  weekDivider: {
+    width: 1,
+    height: 14,
+    backgroundColor: 'rgba(252, 76, 2, 0.3)',
+  },
+  weekFocus: {
+    fontSize: 12,
+    color: '#999',
+    fontStyle: 'italic',
+    flex: 1,
+  },
+  sessionCard: {
+    backgroundColor: 'rgba(45, 45, 45, 0.7)',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(252, 76, 2, 0.2)',
+  },
+  sessionHeader: {
+    marginBottom: 12,
+  },
+  sessionTitleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  sessionTitleRowRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  sessionNumber: {
+    fontSize: 12,
+    color: '#b0b0b0',
+    fontWeight: '600',
+  },
+  intensityBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  intensityText: {
+    fontSize: 11,
+    color: '#ffffff',
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  sessionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 6,
+  },
+  sessionDescription: {
+    fontSize: 13,
+    color: '#b0b0b0',
+    lineHeight: 18,
+  },
+  exercisesContainer: {
+    gap: 10,
+  },
+  exerciseItem: {
+    flexDirection: 'row',
+    gap: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(252, 76, 2, 0.1)',
+  },
+  exerciseContent: {
+    flex: 1,
+  },
+  exerciseName: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#FF6B35',
+    marginBottom: 4,
+  },
+  exerciseDetails: {
+    fontSize: 12,
+    color: '#d0d0d0',
+    lineHeight: 17,
+  },
+});

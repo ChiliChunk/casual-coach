@@ -2,28 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons, AntDesign } from '@expo/vector-icons';
 import CreatePlanForm from '../components/CreatePlanForm';
+import PlanDetails from '../components/PlanDetails';
+import TrainingActivities from '../components/TrainingActivities';
 import { storageService, TrainingPlan, TrainingSchedule } from '../services/storageService';
 import { API_CONFIG } from '../config/api.config';
 import stravaService from '../services/stravaService';
-
-interface Exercise {
-  name: string;
-  details: string;
-}
-
-interface Session {
-  session_number: number;
-  title: string;
-  description: string;
-  intensity: string;
-  exercises: Exercise[];
-}
-
-interface Week {
-  week_number: number;
-  focus: string;
-  sessions: Session[];
-}
 
 export default function PlanScreen() {
   const [hasPlan, setHasPlan] = useState(false);
@@ -32,8 +15,6 @@ export default function PlanScreen() {
   const [loading, setLoading] = useState(true);
   const [generatingWorkouts, setGeneratingWorkouts] = useState(false);
   const [trainingSchedule, setTrainingSchedule] = useState<TrainingSchedule | null>(null);
-  const [expandedSessions, setExpandedSessions] = useState<Set<string>>(new Set());
-  const [isPlanExpanded, setIsPlanExpanded] = useState(false);
 
   useEffect(() => {
     loadPlan();
@@ -73,15 +54,31 @@ export default function PlanScreen() {
   };
 
   const handleDeletePlan = async () => {
-    try {
-      await storageService.deleteTrainingPlan();
-      await storageService.deleteTrainingSessions();
-      setPlanData(null);
-      setTrainingSchedule(null);
-      setHasPlan(false);
-    } catch (error) {
-      console.error('Erreur lors de la suppression du plan:', error);
-    }
+    Alert.alert(
+      'Supprimer le plan',
+      'Êtes-vous sûr de vouloir supprimer ce plan d\'entraînement et toutes les séances associées ?',
+      [
+        {
+          text: 'Annuler',
+          style: 'cancel',
+        },
+        {
+          text: 'Supprimer',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await storageService.deleteTrainingPlan();
+              await storageService.deleteTrainingSessions();
+              setPlanData(null);
+              setTrainingSchedule(null);
+              setHasPlan(false);
+            } catch (error) {
+              console.error('Erreur lors de la suppression du plan:', error);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleGenerateWorkouts = async () => {
@@ -168,224 +165,23 @@ export default function PlanScreen() {
     );
   }
 
-  const getLabel = (key: string, value: string) => {
-    const labels: Record<string, Record<string, string>> = {
-      course_type: {
-        road_running: 'Course sur route',
-        trail: 'Trail',
-      },
-      frequency: {
-        '2+1': '2 + 1 optionnel',
-        '3': '3',
-        '3+1': '3 + 1 optionnel',
-        '4': '4',
-        '4+1': '4 + 1 optionnel',
-      },
-    };
-    return labels[key]?.[value] || value;
-  };
-
-  const getIntensityColor = (intensity: string) => {
-    switch (intensity.toLowerCase()) {
-      case 'élevée':
-        return '#FF6B35';
-      case 'modérée':
-        return '#FFA500';
-      case 'faible':
-        return '#4CAF50';
-      default:
-        return '#999';
-    }
-  };
-
-  const toggleSession = (weekNumber: number, sessionNumber: number) => {
-    const sessionId = `week-${weekNumber}-session-${sessionNumber}`;
-    setExpandedSessions(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(sessionId)) {
-        newSet.delete(sessionId);
-      } else {
-        newSet.add(sessionId);
-      }
-      return newSet;
-    });
-  };
-
-  const renderSession = (session: Session, weekNumber: number) => {
-    const sessionId = `week-${weekNumber}-session-${session.session_number}`;
-    const isExpanded = expandedSessions.has(sessionId);
-
-    return (
-      <TouchableOpacity 
-        key={sessionId} 
-        style={styles.sessionCard}
-        onPress={() => toggleSession(weekNumber, session.session_number)}
-        activeOpacity={0.7}
-      >
-        <View style={styles.sessionHeader}>
-          <View style={styles.sessionTitleRow}>
-            <Text style={styles.sessionNumber}>Séance {session.session_number}</Text>
-            <View style={styles.sessionTitleRowRight}>
-              <View style={[styles.intensityBadge, { backgroundColor: getIntensityColor(session.intensity) }]}>
-                <Text style={styles.intensityText}>{session.intensity}</Text>
-              </View>
-              <Ionicons 
-                name={isExpanded ? "chevron-up" : "chevron-down"} 
-                size={20} 
-                color="#b0b0b0" 
-              />
-            </View>
-          </View>
-          <Text style={styles.sessionTitle}>{session.title}</Text>
-          <Text style={styles.sessionDescription} numberOfLines={isExpanded ? undefined : 2}>
-            {session.description}
-          </Text>
-        </View>
-
-        {isExpanded && (
-          <View style={styles.exercisesContainer}>
-            {session.exercises.map((exercise, index) => (
-              <View key={`exercise-${index}`} style={styles.exerciseItem}>
-                <Ionicons name="fitness-outline" size={16} color="#FF6B35" />
-                <View style={styles.exerciseContent}>
-                  <Text style={styles.exerciseName}>{exercise.name}</Text>
-                  <Text style={styles.exerciseDetails}>{exercise.details}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        )}
-      </TouchableOpacity>
-    );
-  };
-
-  const renderWeek = (week: Week) => (
-    <View key={`week-${week.week_number}`} style={styles.weekContainer}>
-      <View style={styles.weekHeader}>
-        <Text style={styles.weekTitle}>S{week.week_number}</Text>
-        <View style={styles.weekDivider} />
-        <Text style={styles.weekFocus}>{week.focus}</Text>
-      </View>
-      {week.sessions.map((session) => renderSession(session, week.week_number))}
-    </View>
-  );
-
   return (
     <ScrollView style={styles.scrollContainer}>
       <View style={styles.planContainer}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Mon Plan</Text>
-          <TouchableOpacity onPress={handleDeletePlan} style={styles.deleteButton}>
-            <Ionicons name="trash-outline" size={24} color="#FF6B35" />
-          </TouchableOpacity>
-        </View>
-
         {planData && (
-          <TouchableOpacity 
-            style={styles.compactCard}
-            onPress={() => setIsPlanExpanded(!isPlanExpanded)}
-            activeOpacity={0.7}
-          >
-            <View style={styles.courseTitleSection}>
-              <Ionicons name="trophy" size={24} color="#FF6B35" />
-              <Text style={styles.courseTitle}>{planData.course_label}</Text>
-              <Ionicons 
-                name={isPlanExpanded ? "chevron-up" : "chevron-down"} 
-                size={24} 
-                color="#b0b0b0" 
-              />
-            </View>
-
-            {isPlanExpanded && (
-              <>
-                <View style={styles.divider} />
-
-            <View style={styles.infoGrid}>
-              <View style={styles.infoItem}>
-                <Ionicons name="bicycle-outline" size={20} color="#FF6B35" />
-                <Text style={styles.infoLabel}>Type</Text>
-                <Text style={styles.infoValue}>
-                  {getLabel('course_type', planData.course_type)}
-                </Text>
-              </View>
-
-              <View style={styles.infoItem}>
-                <Ionicons name="resize-outline" size={20} color="#FF6B35" />
-                <Text style={styles.infoLabel}>Distance</Text>
-                <Text style={styles.infoValue}>
-                  {planData.course_km} km
-                </Text>
-              </View>
-
-              <View style={styles.infoItem}>
-                <Ionicons name="trending-up-outline" size={20} color="#FF6B35" />
-                <Text style={styles.infoLabel}>D+</Text>
-                <Text style={styles.infoValue}>
-                  {planData.course_elevation} m
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.infoGrid}>
-              <View style={styles.infoItem}>
-                <Ionicons name="calendar-outline" size={20} color="#FF6B35" />
-                <Text style={styles.infoLabel}>Fréquence</Text>
-                <Text style={styles.infoValue}>
-                  {getLabel('frequency', planData.frequency)}/sem
-                </Text>
-              </View>
-
-              <View style={styles.infoItem}>
-                <Ionicons name="time-outline" size={20} color="#FF6B35" />
-                <Text style={styles.infoLabel}>Durée</Text>
-                <Text style={styles.infoValue}>
-                  {planData.duration} sem.
-                </Text>
-              </View>
-
-              <View style={styles.infoItem} />
-            </View>
-
-            <View style={styles.dateSection}>
-              <Ionicons name="checkmark-circle" size={16} color="#666" />
-              <Text style={styles.dateText}>
-                Créé le {new Date(planData.createdAt).toLocaleDateString('fr-FR', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
-                })}
-              </Text>
-            </View>
-              </>
-            )}
-          </TouchableOpacity>
+          <PlanDetails
+            planData={planData}
+            hasSchedule={!!trainingSchedule}
+            generatingWorkouts={generatingWorkouts}
+            onGenerateWorkouts={handleGenerateWorkouts}
+            onDelete={handleDeletePlan}
+          />
         )}
 
-        {!trainingSchedule ? (
-          <TouchableOpacity
-            style={[styles.createNewButton, generatingWorkouts && styles.buttonDisabled]}
-            onPress={handleGenerateWorkouts}
-            disabled={generatingWorkouts}
-          >
-            {generatingWorkouts ? (
-              <ActivityIndicator size="small" color="#fff" />
-            ) : (
-              <Ionicons name="sparkles-outline" size={20} color="#fff" />
-            )}
-            <Text style={styles.createNewButtonText}>
-              {generatingWorkouts ? 'Génération...' : 'Generer les Scéances'}
-            </Text>
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.scheduleContainer}>
-            <View style={styles.scheduleHeader}>
-              <Text style={styles.scheduleTitle}>Programme d'entraînement</Text>
-              <TouchableOpacity onPress={() => setTrainingSchedule(null)} style={styles.closeScheduleButton}>
-                <Ionicons name="close-circle-outline" size={24} color="#FF6B35" />
-              </TouchableOpacity>
-            </View>
-            {trainingSchedule.weeks.map((week) => renderWeek(week))}
-          </View>
+        {trainingSchedule && (
+          <TrainingActivities
+            trainingSchedule={trainingSchedule}
+          />
         )}
       </View>
     </ScrollView>
@@ -406,102 +202,11 @@ const styles = StyleSheet.create({
   },
   planContainer: {
     padding: 20,
-    paddingTop: 60,
+    paddingTop: 20,
   },
   modalContainer: {
     flex: 1,
     backgroundColor: '#1a1a1a',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  deleteButton: {
-    padding: 8,
-  },
-  compactCard: {
-    backgroundColor: 'rgba(45, 45, 45, 0.7)',
-    padding: 20,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: 'rgba(252, 76, 2, 0.2)',
-  },
-  courseTitleSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  courseTitle: {
-    fontSize: 22,
-    color: '#ffffff',
-    fontWeight: 'bold',
-    flex: 1,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: 'rgba(252, 76, 2, 0.2)',
-    marginTop: 15,
-    marginBottom: 15,
-  },
-  infoGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 15,
-  },
-  infoItem: {
-    flex: 1,
-    alignItems: 'center',
-    gap: 6,
-  },
-  infoLabel: {
-    fontSize: 12,
-    color: '#b0b0b0',
-    fontWeight: '500',
-  },
-  infoValue: {
-    fontSize: 16,
-    color: '#ffffff',
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  dateSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(252, 76, 2, 0.1)',
-  },
-  dateText: {
-    fontSize: 12,
-    color: '#666',
-  },
-  createNewButton: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(252, 76, 2, 0.9)',
-    paddingHorizontal: 25,
-    paddingVertical: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 30,
-    gap: 10,
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  createNewButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
   },
   emptyTitle: {
     fontSize: 24,
@@ -534,127 +239,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginLeft: 10,
-  },
-  scheduleContainer: {
-    marginTop: 30,
-  },
-  scheduleHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-    paddingBottom: 15,
-    borderBottomWidth: 2,
-    borderBottomColor: 'rgba(252, 76, 2, 0.3)',
-  },
-  scheduleTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  closeScheduleButton: {
-    padding: 5,
-  },
-  weekContainer: {
-    marginBottom: 25,
-  },
-  weekHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 12,
-    paddingBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(252, 76, 2, 0.2)',
-  },
-  weekTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#FF6B35',
-    minWidth: 30,
-  },
-  weekDivider: {
-    width: 1,
-    height: 14,
-    backgroundColor: 'rgba(252, 76, 2, 0.3)',
-  },
-  weekFocus: {
-    fontSize: 12,
-    color: '#999',
-    fontStyle: 'italic',
-    flex: 1,
-  },
-  sessionCard: {
-    backgroundColor: 'rgba(45, 45, 45, 0.7)',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(252, 76, 2, 0.2)',
-  },
-  sessionHeader: {
-    marginBottom: 12,
-  },
-  sessionTitleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  sessionTitleRowRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  sessionNumber: {
-    fontSize: 12,
-    color: '#b0b0b0',
-    fontWeight: '600',
-  },
-  intensityBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  intensityText: {
-    fontSize: 11,
-    color: '#ffffff',
-    fontWeight: '600',
-    textTransform: 'capitalize',
-  },
-  sessionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 6,
-  },
-  sessionDescription: {
-    fontSize: 13,
-    color: '#b0b0b0',
-    lineHeight: 18,
-  },
-  exercisesContainer: {
-    gap: 10,
-  },
-  exerciseItem: {
-    flexDirection: 'row',
-    gap: 10,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(252, 76, 2, 0.1)',
-  },
-  exerciseContent: {
-    flex: 1,
-  },
-  exerciseName: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#FF6B35',
-    marginBottom: 4,
-  },
-  exerciseDetails: {
-    fontSize: 12,
-    color: '#d0d0d0',
-    lineHeight: 17,
   },
 });
