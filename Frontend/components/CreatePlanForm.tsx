@@ -14,6 +14,7 @@ import { storageService } from '../services/storageService';
 import stravaService from '../services/stravaService';
 import axios from 'axios';
 import { API_CONFIG } from '../config/api.config';
+import StravaConnectButton from './StravaConnectButton';
 
 const { width } = Dimensions.get('window');
 
@@ -24,6 +25,7 @@ type Props = {
 
 export default function CreatePlanForm({ onClose, onComplete }: Props) {
   const [currentStep, setCurrentStep] = useState(0);
+  const [isStravaConnected, setIsStravaConnected] = useState(false);
   const [formData, setFormData] = useState({
     course_label: '',
     course_type: '',
@@ -82,6 +84,11 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
       placeholder: 'Ex: 8',
       unit: 'semaines',
     },
+    {
+      id: 'strava_connect',
+      question: 'Connexion à Strava',
+      type: 'strava' as const,
+    }
   ];
 
   const handleNext = () => {
@@ -136,9 +143,17 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
     setFormData({ ...formData, [questionId]: value });
   };
 
+  const handleStravaConnected = () => {
+    setIsStravaConnected(true);
+    setTimeout(handleNext, 500);
+  };
+
   const currentQuestion = questions[currentStep];
   const isLastStep = currentStep === questions.length - 1;
-  const canProceed = formData[currentQuestion.id as keyof typeof formData];
+  const canProceed = 
+    currentQuestion.type === 'strava' 
+      ? isStravaConnected 
+      : formData[currentQuestion.id as keyof typeof formData];
 
   return (
     <View style={styles.container}>
@@ -171,6 +186,17 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
               Question {index + 1}/{questions.length}
             </Text>
             <Text style={styles.questionText}>{question.question}</Text>
+
+            {question.type === 'strava' && (
+              <View style={styles.stravaContainer}>
+                <StravaConnectButton
+                  onAuthSuccess={handleStravaConnected}
+                  onAuthError={(error) => {
+                    Alert.alert('Erreur de connexion', error);
+                  }}
+                />
+              </View>
+            )}
 
             {question.type === 'choice' && question.options && (
               <View style={styles.optionsContainer}>
@@ -393,5 +419,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#ffffff',
     fontWeight: '500',
+  },
+  stravaContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
