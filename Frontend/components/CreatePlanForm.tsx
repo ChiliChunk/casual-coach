@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,9 @@ import {
   Dimensions,
   TextInput,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { storageService } from '../services/storageService';
@@ -37,6 +40,13 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
   });
 
   const slideAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const currentQuestion = questions[currentStep];
+    if (currentQuestion.type === 'choice' || currentQuestion.type === 'strava') {
+      Keyboard.dismiss();
+    }
+  }, [currentStep]);
 
   const questions = [
     {
@@ -163,7 +173,11 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
       : formData[currentQuestion.id as keyof typeof formData];
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={0}
+    >
       <View style={styles.header}>
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
           <Ionicons name="close" size={28} color="#FF6B35" />
@@ -291,9 +305,9 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
             <Text style={styles.navButtonText}>Précédent</Text>
           </TouchableOpacity>
         )}
-        
+
         <View style={{ flex: 1 }} />
-        
+
         {canProceed && (
           <TouchableOpacity
             onPress={handleNext}
@@ -306,7 +320,7 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
           </TouchableOpacity>
         )}
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
