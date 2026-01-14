@@ -9,17 +9,22 @@ Génère un plan d'entraînement complet pour la course suivante :
 - Nom de la course : {{course_label}}
 - Format de la course : {{course_km}} km, {{course_elevation}} D+
 - Type de course : {{course_type}}
-- Fréquence d'entraînement : {{frequency}} séances par semaine
-- Durée de préparation : {{duration}} semaines
-- 20 dernières activités strava de l'utilisateur : {{activities}}
+
+**Informations utilisateur :**
+- Présentation de la part de l'utilisateur: {{user_presentation}}
+- 20 dernières activités strava de l'utilisateur : 
+----------DEBUT DES ACTIVITES STRAVA-------------------
+{{activities}}
+----------FIN DES ACTIVITES STRAVA---------------------
 
 **Instructions :**
 1. Crée un plan d'entraînement progressif sur {{duration}} semaines
 2. Chaque semaine doit contenir {{frequency}} séances d'entraînement
 3. Le plan doit être adapté au type de course ({{course_type}})
 4. Ne donne pas de vitesse cible ni de FC à suivre, fait avec un RPE de 1 à 10
-5. Respecte une progression logique avec alternance effort/récupération
-6. Inclus une phase de préparation, une phase de développement et une phase d'affûtage
+5. Si tu propose un entrainement croisé, ajoute toujours une alternative course à pied.
+6. Respecte une progression logique avec alternance effort/récupération
+7. Inclus une phase de préparation, une phase de développement et une phase d'affûtage
 
 **Format de réponse attendu (JSON) :**
 {
