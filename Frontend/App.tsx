@@ -4,12 +4,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import StravaLoginScreen from './screens/StravaLoginScreen';
 import StravaProfileScreen from './screens/StravaProfileScreen';
 import PlanScreen from './screens/PlanScreen';
 
 export type RootStackParamList = {
-  StravaLogin: undefined;
   MainTabs: undefined;
 };
 
@@ -31,7 +29,7 @@ function MainTabs() {
           if (route.name === 'Plan') {
             iconName = focused ? 'calendar' : 'calendar-outline';
           } else if (route.name === 'Profile') {
-            iconName = focused ? 'fitness' : 'fitness-outline';
+            iconName = focused ? 'person' : 'person-outline';
           } else {
             iconName = 'help-outline';
           }
@@ -62,7 +60,7 @@ function MainTabs() {
       <Tab.Screen
         name="Profile"
         component={StravaProfileScreen}
-        options={{ title: 'Activités' }}
+        options={{ title: 'Mon profil' }}
       />
     </Tab.Navigator>
   );
@@ -85,11 +83,6 @@ export default function App() {
           },
         }}
       >
-        <Stack.Screen
-          name="StravaLogin"
-          component={StravaLoginScreen}
-          options={{ title: 'Connexion Strava' }}
-        />
         <Stack.Screen
           name="MainTabs"
           component={MainTabs}

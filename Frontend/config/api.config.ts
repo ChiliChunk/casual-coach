@@ -2,7 +2,7 @@
 // Pour Expo Go, utilisez l'adresse IP locale de votre machine au lieu de localhost
 // Exemple: 'http://192.168.1.78:3000/api/v1'
 export const API_CONFIG = {
-  BASE_URL: 'http://192.168.1.78:3000/api/v1',
+  BASE_URL: 'http://192.168.1.29:3000/api/v1',
   ENDPOINTS: {
     STRAVA: {
       CONFIG: '/strava/config',

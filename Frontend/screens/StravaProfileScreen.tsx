@@ -30,10 +30,28 @@ export default function StravaProfileScreen({ navigation }: Props) {
   const [activities, setActivities] = useState<StravaActivity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isStravaLinked, setIsStravaLinked] = useState(false);
 
   useEffect(() => {
-    loadData();
+    checkStravaConnection();
   }, []);
+
+  const checkStravaConnection = async () => {
+    try {
+      const isLinked = await stravaService.isAuthenticated();
+      console.log('Strava connection status:', isLinked);
+      setIsStravaLinked(isLinked);
+      if (isLinked) {
+        await loadData();
+      } else {
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error('Error checking Strava connection:', error);
+      setIsStravaLinked(false);
+      setIsLoading(false);
+    }
+  };
 
   const loadData = async () => {
     try {
@@ -59,8 +77,27 @@ export default function StravaProfileScreen({ navigation }: Props) {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await loadData();
+    await checkStravaConnection();
     setIsRefreshing(false);
+  };
+
+  const handleLinkStrava = () => {
+    Alert.alert(
+      'Connecter Strava',
+      'Connectez votre compte Strava pour synchroniser vos activités',
+      [
+        {
+          text: 'Annuler',
+          style: 'cancel',
+        },
+        {
+          text: 'Connecter',
+          onPress: () => {
+            Alert.alert('Info', 'Fonctionnalité de connexion Strava à venir');
+          },
+        },
+      ]
+    );
   };
 
   const handleLogout = async () => {
@@ -124,83 +161,98 @@ export default function StravaProfileScreen({ navigation }: Props) {
   return (
     <ScrollView
       style={styles.container}
+      contentContainerStyle={styles.scrollContent}
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
       }
     >
-      {athlete && (
-        <View style={styles.profileSection}>
-          <Image
-            source={{ uri: athlete.profile }}
-            style={styles.profileImage}
-          />
-          <Text style={styles.athleteName}>
-            {athlete.firstname} {athlete.lastname}
-          </Text>
-          {athlete.city && athlete.country && (
-            <Text style={styles.athleteLocation}>
-              {athlete.city}, {athlete.country}
+      {!isStravaLinked ? (
+        <View style={styles.notLinkedContainer}>
+          <View style={styles.notLinkedContent}>
+            <Text style={styles.notLinkedTitle}>Compte Strava non connecté</Text>
+            <Text style={styles.notLinkedText}>
+              Connectez votre compte Strava pour synchroniser et voir vos activités
             </Text>
-          )}
-          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutButtonText}>Déconnexion</Text>
+          </View>
+          <TouchableOpacity style={styles.linkButton} onPress={handleLinkStrava}>
+            <Text style={styles.linkButtonText}>Connecter Strava</Text>
           </TouchableOpacity>
         </View>
-      )}
-
-      <View style={styles.activitiesSection}>
-        <Text style={styles.sectionTitle}>Activités récentes</Text>
-        {activities.length === 0 ? (
-          <Text style={styles.noActivitiesText}>Aucune activité trouvée</Text>
-        ) : (
-          activities.map((activity) => (
-            <View key={activity.id} style={styles.activityCard}>
-              <View style={styles.activityHeader}>
-                <Text style={styles.activityName}>{activity.name}</Text>
-                <Text style={styles.activityType}>{activity.sport_type}</Text>
-              </View>
-              <Text style={styles.activityDate}>
-                {formatDate(activity.start_date_local)}
+      ) : (
+        <>
+          {athlete && (
+            <View style={styles.profileSection}>
+              <Image
+                source={{ uri: athlete.profile }}
+                style={styles.profileImage}
+              />
+              <Text style={styles.athleteName}>
+                {athlete.firstname} {athlete.lastname}
               </Text>
-              <View style={styles.activityStats}>
-                <View style={styles.statItem}>
-                  <Text style={styles.statLabel}>Distance</Text>
-                  <Text style={styles.statValue}>
-                    {formatDistance(activity.distance)}
-                  </Text>
-                </View>
-                <View style={styles.statItem}>
-                  <Text style={styles.statLabel}>Durée</Text>
-                  <Text style={styles.statValue}>
-                    {formatDuration(activity.moving_time)}
-                  </Text>
-                </View>
-                <View style={styles.statItem}>
-                  <Text style={styles.statLabel}>Vitesse moy.</Text>
-                  <Text style={styles.statValue}>
-                    {formatSpeed(activity.average_speed)}
-                  </Text>
-                </View>
-                {activity.average_heartrate && (
-                  <View style={styles.statItem}>
-                    <Text style={styles.statLabel}>FC moy.</Text>
-                    <Text style={styles.statValue}>
-                      {Math.round(activity.average_heartrate)} bpm
-                    </Text>
-                  </View>
-                )}
-              </View>
-              {activity.total_elevation_gain > 0 && (
-                <Text style={styles.elevationText}>
-                  Dénivelé: {Math.round(activity.total_elevation_gain)}m
+              {athlete.city && athlete.country && (
+                <Text style={styles.athleteLocation}>
+                  {athlete.city}, {athlete.country}
                 </Text>
               )}
+              <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                <Text style={styles.logoutButtonText}>Déconnexion</Text>
+              </TouchableOpacity>
             </View>
-          ))
-        )}
-      </View>
+          )}
 
-      {/* Bouton retour à l'accueil supprimé */}
+          <View style={styles.activitiesSection}>
+            <Text style={styles.sectionTitle}>Activités récentes</Text>
+            {activities.length === 0 ? (
+              <Text style={styles.noActivitiesText}>Aucune activité trouvée</Text>
+            ) : (
+              activities.map((activity) => (
+                <View key={activity.id} style={styles.activityCard}>
+                  <View style={styles.activityHeader}>
+                    <Text style={styles.activityName}>{activity.name}</Text>
+                    <Text style={styles.activityType}>{activity.sport_type}</Text>
+                  </View>
+                  <Text style={styles.activityDate}>
+                    {formatDate(activity.start_date_local)}
+                  </Text>
+                  <View style={styles.activityStats}>
+                    <View style={styles.statItem}>
+                      <Text style={styles.statLabel}>Distance</Text>
+                      <Text style={styles.statValue}>
+                        {formatDistance(activity.distance)}
+                      </Text>
+                    </View>
+                    <View style={styles.statItem}>
+                      <Text style={styles.statLabel}>Durée</Text>
+                      <Text style={styles.statValue}>
+                        {formatDuration(activity.moving_time)}
+                      </Text>
+                    </View>
+                    <View style={styles.statItem}>
+                      <Text style={styles.statLabel}>Vitesse moy.</Text>
+                      <Text style={styles.statValue}>
+                        {formatSpeed(activity.average_speed)}
+                      </Text>
+                    </View>
+                    {activity.average_heartrate && (
+                      <View style={styles.statItem}>
+                        <Text style={styles.statLabel}>FC moy.</Text>
+                        <Text style={styles.statValue}>
+                          {Math.round(activity.average_heartrate)} bpm
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                  {activity.total_elevation_gain > 0 && (
+                    <Text style={styles.elevationText}>
+                      Dénivelé: {Math.round(activity.total_elevation_gain)}m
+                    </Text>
+                  )}
+                </View>
+              ))
+            )}
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 }
@@ -209,6 +261,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1a1a1a',
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   loadingContainer: {
     flex: 1,
@@ -220,6 +275,50 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: '#b0b0b0',
+  },
+  notLinkedContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    paddingBottom: 40,
+  },
+  notLinkedContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notLinkedTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  notLinkedText: {
+    fontSize: 16,
+    color: '#b0b0b0',
+    textAlign: 'center',
+    marginBottom: 30,
+    lineHeight: 24,
+  },
+  linkButton: {
+    backgroundColor: 'rgba(252, 76, 2, 0.9)',
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 10,
+    elevation: 3,
+    shadowColor: '#FC4C02',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+    width: '90%',
+    alignItems: 'center',
+  },
+  linkButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   profileSection: {
     backgroundColor: 'rgba(45, 45, 45, 0.8)',
