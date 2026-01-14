@@ -97,6 +97,7 @@ export default function PlanScreen() {
           course_elevation: planData.course_elevation,
           frequency: planData.frequency,
           duration: planData.duration,
+          user_presentation: planData.user_presentation,
           userId,
         }
       console.log('Request data for training plan generation:', data);

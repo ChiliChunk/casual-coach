@@ -11,6 +11,7 @@ interface TrainingPlanInput {
   course_elevation: string;
   frequency: string;
   duration: string;
+  user_presentation?: string;
   activities?: FilteredActivity[];
 }
 

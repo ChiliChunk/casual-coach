@@ -7,7 +7,7 @@ import path from 'path';
 
 export const generateTrainingPlan = async (req: Request, res: Response) => {
   try {
-    const { course_label, course_type, course_km, course_elevation, frequency, duration, userId } = req.body;
+    const { course_label, course_type, course_km, course_elevation, frequency, duration, user_presentation, userId } = req.body;
 
     if (!course_label || !course_type || !course_km || !course_elevation || !frequency || !duration) {
       return res.status(400).json({
@@ -24,6 +24,7 @@ export const generateTrainingPlan = async (req: Request, res: Response) => {
       course_elevation,
       frequency,
       duration,
+      user_presentation,
       activities,
     });
 
@@ -42,7 +43,7 @@ export const generateTrainingPlan = async (req: Request, res: Response) => {
 
 export const getMockTrainingPlan = async (req: Request, res: Response) => {
   try {
-    const { course_label, course_type, course_km, course_elevation, frequency, duration, userId } = req.body;
+    const { course_label, course_type, course_km, course_elevation, frequency, duration, user_presentation, userId } = req.body;
     console.log(req.body)
     if (!course_label || !course_type || !course_km || !course_elevation || !frequency || !duration) {
       return res.status(400).json({
