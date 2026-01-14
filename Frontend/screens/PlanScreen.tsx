@@ -178,11 +178,13 @@ export default function PlanScreen() {
   if (!hasPlan) {
     return (
       <View style={styles.container}>
-        <AntDesign name="frown" size={80} color="#666" />
-        <Text style={styles.emptyTitle}>Aucun plan d'entraînement</Text>
-        <Text style={styles.emptySubtitle}>
-          Créez votre premier plan pour commencer
-        </Text>
+        <View style={styles.emptyContent}>
+          <AntDesign name="frown" size={80} color="#666" />
+          <Text style={styles.emptyTitle}>Aucun plan d'entraînement</Text>
+          <Text style={styles.emptySubtitle}>
+            Créez votre premier plan pour commencer
+          </Text>
+        </View>
         <TouchableOpacity style={styles.createButton} onPress={handleCreatePlan}>
           <Ionicons name="add-circle-outline" size={24} color="#fff" />
           <Text style={styles.createButtonText}>Créer un plan</Text>
@@ -218,10 +220,16 @@ export default function PlanScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#1a1a1a',
     padding: 20,
+    paddingBottom: 40,
+  },
+  emptyContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   scrollContainer: {
     flex: 1,
@@ -255,11 +263,13 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: 'center',
+    justifyContent: 'center',
     elevation: 3,
     shadowColor: '#FC4C02',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 3.84,
+    width: '90%',
   },
   createButtonText: {
     color: '#fff',

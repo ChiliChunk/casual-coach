@@ -12,7 +12,7 @@ interface PlanDetailsProps {
 }
 
 export default function PlanDetails({ planData, hasSchedule, generatingWorkouts, onGenerateWorkouts, onDelete }: PlanDetailsProps) {
-  const [isPlanExpanded, setIsPlanExpanded] = useState(false);
+  const [isPlanExpanded, setIsPlanExpanded] = useState(!hasSchedule);
 
   const getLabel = (key: string, value: string) => {
     const labels: Record<string, Record<string, string>> = {

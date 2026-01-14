@@ -10,6 +10,7 @@ import {
   Alert,
   RefreshControl,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -169,6 +170,7 @@ export default function StravaProfileScreen({ navigation }: Props) {
       {!isStravaLinked ? (
         <View style={styles.notLinkedContainer}>
           <View style={styles.notLinkedContent}>
+            <Ionicons name="alert-circle-outline" size={80} color="#666" style={styles.notLinkedIcon} />
             <Text style={styles.notLinkedTitle}>Compte Strava non connecté</Text>
             <Text style={styles.notLinkedText}>
               Connectez votre compte Strava pour synchroniser et voir vos activités
@@ -287,6 +289,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  notLinkedIcon: {
+    marginBottom: 20,
   },
   notLinkedTitle: {
     fontSize: 22,
