@@ -36,7 +36,6 @@ interface PopupState {
 
 export default function CreatePlanForm({ onClose, onComplete }: Props) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [isStravaConnected, setIsStravaConnected] = useState(false);
   const [popup, setPopup] = useState<PopupState>({
     visible: false,
     type: 'error',
@@ -119,15 +118,16 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
       unit: 'semaines',
     },
     {
+      id: 'strava_connect',
+      question: 'Connexion à Strava (optionnel)',
+      type: 'strava' as const,
+      optional: true,
+    },
+    {
       id: 'user_presentation',
       question: 'Présentez-vous en quelques mots',
       type: 'multiline' as const,
       placeholder: 'Mon temps au semi est 2h10, je m\'entraine depuis 2 ans...',
-    },
-    {
-      id: 'strava_connect',
-      question: 'Connexion à Strava',
-      type: 'strava' as const,
     }
   ];
 
@@ -184,15 +184,14 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
   };
 
   const handleStravaConnected = () => {
-    setIsStravaConnected(true);
     setTimeout(handleNext, 500);
   };
 
   const currentQuestion = questions[currentStep];
   const isLastStep = currentStep === questions.length - 1;
-  const canProceed = 
-    currentQuestion.type === 'strava' 
-      ? isStravaConnected 
+  const canProceed =
+    currentQuestion.type === 'strava'
+      ? true
       : formData[currentQuestion.id as keyof typeof formData];
 
   return (
@@ -341,7 +340,7 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
             style={[styles.navButton, styles.nextButton]}
           >
             <Text style={styles.nextButtonText}>
-              {isLastStep ? 'Créer le plan' : 'Suivant'}
+              {isLastStep ? 'Créer le plan' : (currentQuestion.type === 'strava' ? 'Passer' : 'Suivant')}
             </Text>
             <Ionicons name="arrow-forward" size={24} color={colors.textInverse} />
           </TouchableOpacity>
@@ -512,5 +511,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  optionalText: {
+    fontSize: fonts.sizes.md,
+    fontFamily: fonts.family,
+    color: colors.textMuted,
+    textAlign: 'center',
+    marginTop: spacing.xl,
+    paddingHorizontal: spacing.xl,
   },
 });
