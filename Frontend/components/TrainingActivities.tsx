@@ -20,6 +20,8 @@ interface SessionCardProps {
 
 function SessionCard({ session, weekNumber, isExpanded, onToggleExpanded, onToggleDone, getIntensityColor }: SessionCardProps) {
   const animatedValue = useRef(new Animated.Value(session.done ? 1 : 0)).current;
+  const expandAnimation = useRef(new Animated.Value(isExpanded ? 1 : 0)).current;
+  const [contentHeight, setContentHeight] = useState(0);
 
   useEffect(() => {
     Animated.timing(animatedValue, {
@@ -28,6 +30,24 @@ function SessionCard({ session, weekNumber, isExpanded, onToggleExpanded, onTogg
       useNativeDriver: false,
     }).start();
   }, [session.done]);
+
+  useEffect(() => {
+    Animated.timing(expandAnimation, {
+      toValue: isExpanded ? 1 : 0,
+      duration: 250,
+      useNativeDriver: false,
+    }).start();
+  }, [isExpanded]);
+
+  const animatedHeight = expandAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, contentHeight],
+  });
+
+  const animatedOpacity = expandAnimation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0, 0, 1],
+  });
 
   const backgroundColor = animatedValue.interpolate({
     inputRange: [0, 1],
@@ -93,10 +113,18 @@ function SessionCard({ session, weekNumber, isExpanded, onToggleExpanded, onTogg
           </Text>
         </View>
 
-        {isExpanded && (
-          <View style={styles.exercisesContainer}>
+        <View style={styles.exercisesWrapper}>
+          <View
+            style={[styles.exercisesMeasure, { position: 'absolute', opacity: 0 }]}
+            onLayout={(e) => {
+              const height = e.nativeEvent.layout.height;
+              if (height > 0 && height !== contentHeight) {
+                setContentHeight(height);
+              }
+            }}
+          >
             {session.exercises.map((exercise, index) => (
-              <View key={`exercise-${index}`} style={styles.exerciseItem}>
+              <View key={`measure-${index}`} style={styles.exerciseItem}>
                 <Ionicons name="fitness-outline" size={16} color={colors.accent} />
                 <View style={styles.exerciseContent}>
                   <Text style={styles.exerciseName}>{exercise.name}</Text>
@@ -105,7 +133,20 @@ function SessionCard({ session, weekNumber, isExpanded, onToggleExpanded, onTogg
               </View>
             ))}
           </View>
-        )}
+          <Animated.View style={{ height: animatedHeight, opacity: animatedOpacity, overflow: 'hidden' }}>
+            <View style={styles.exercisesContainer}>
+              {session.exercises.map((exercise, index) => (
+                <View key={`exercise-${index}`} style={styles.exerciseItem}>
+                  <Ionicons name="fitness-outline" size={16} color={colors.accent} />
+                  <View style={styles.exerciseContent}>
+                    <Text style={styles.exerciseName}>{exercise.name}</Text>
+                    <Text style={styles.exerciseDetails}>{exercise.details}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </Animated.View>
+        </View>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -307,6 +348,12 @@ const styles = StyleSheet.create({
     fontFamily: fonts.family,
     color: colors.textSecondary,
     lineHeight: 18,
+  },
+  exercisesWrapper: {
+    position: 'relative',
+  },
+  exercisesMeasure: {
+    gap: spacing.md,
   },
   exercisesContainer: {
     gap: spacing.md,
