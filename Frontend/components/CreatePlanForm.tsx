@@ -7,7 +7,6 @@ import {
   Animated,
   Dimensions,
   TextInput,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Keyboard,
@@ -18,6 +17,7 @@ import stravaService from '../services/stravaService';
 import axios from 'axios';
 import { API_CONFIG } from '../config/api.config';
 import StravaConnectButton from './StravaConnectButton';
+import Popup from './Popup';
 import { colors, fonts, spacing, borderRadius, shadows } from '../constants/theme';
 
 const { width } = Dimensions.get('window');
@@ -27,9 +27,31 @@ type Props = {
   onComplete: (planData: any) => void;
 };
 
+interface PopupState {
+  visible: boolean;
+  type: 'success' | 'error' | 'info' | 'warning';
+  title: string;
+  message: string;
+}
+
 export default function CreatePlanForm({ onClose, onComplete }: Props) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isStravaConnected, setIsStravaConnected] = useState(false);
+  const [popup, setPopup] = useState<PopupState>({
+    visible: false,
+    type: 'error',
+    title: '',
+    message: '',
+  });
+
+  const showPopup = (config: Omit<PopupState, 'visible'>) => {
+    setPopup({ ...config, visible: true });
+  };
+
+  const hidePopup = () => {
+    setPopup(prev => ({ ...prev, visible: false }));
+  };
+
   const [formData, setFormData] = useState({
     course_label: '',
     course_type: '',
@@ -127,11 +149,11 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
       await storageService.saveTrainingPlan(formData);
       onComplete(formData);
     } catch (error) {
-      Alert.alert(
-        'Erreur',
-        'Impossible de sauvegarder le plan d\'entraînement. Veuillez réessayer.',
-        [{ text: 'OK' }]
-      );
+      showPopup({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Impossible de sauvegarder le plan d\'entraînement. Veuillez réessayer.',
+      });
     }
   };
 
@@ -214,7 +236,11 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
                 <StravaConnectButton
                   onAuthSuccess={handleStravaConnected}
                   onAuthError={(error) => {
-                    Alert.alert('Erreur de connexion', error);
+                    showPopup({
+                      type: 'error',
+                      title: 'Erreur de connexion',
+                      message: error,
+                    });
                   }}
                 />
               </View>
@@ -321,6 +347,14 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
           </TouchableOpacity>
         )}
       </View>
+
+      <Popup
+        visible={popup.visible}
+        type={popup.type}
+        title={popup.title}
+        message={popup.message}
+        onClose={hidePopup}
+      />
     </KeyboardAvoidingView>
   );
 }

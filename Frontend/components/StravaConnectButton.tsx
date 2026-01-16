@@ -5,11 +5,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import stravaService, { StravaConfig } from '../services/stravaService';
+import Popup from './Popup';
 import { colors, fonts, spacing, borderRadius, shadows } from '../constants/theme';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -19,9 +19,30 @@ type Props = {
   onAuthError?: (error: string) => void;
 };
 
+interface PopupState {
+  visible: boolean;
+  type: 'success' | 'error' | 'info' | 'warning';
+  title: string;
+  message: string;
+}
+
 export default function StravaConnectButton({ onAuthSuccess, onAuthError }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [stravaConfig, setStravaConfig] = useState<StravaConfig | null>(null);
+  const [popup, setPopup] = useState<PopupState>({
+    visible: false,
+    type: 'error',
+    title: '',
+    message: '',
+  });
+
+  const showPopup = (config: Omit<PopupState, 'visible'>) => {
+    setPopup({ ...config, visible: true });
+  };
+
+  const hidePopup = () => {
+    setPopup(prev => ({ ...prev, visible: false }));
+  };
 
   const redirectUri = AuthSession.makeRedirectUri({
     path: 'exchange_token'
@@ -36,10 +57,11 @@ export default function StravaConnectButton({ onAuthSuccess, onAuthError }: Prop
       const config = await stravaService.getConfig();
       setStravaConfig(config);
     } catch (error) {
-      Alert.alert(
-        'Erreur de connexion',
-        'Impossible de se connecter au backend. Vérifiez que le serveur est démarré et que vous êtes sur le même réseau WiFi.'
-      );
+      showPopup({
+        type: 'error',
+        title: 'Erreur de connexion',
+        message: 'Impossible de se connecter au backend. Vérifiez que le serveur est démarré et que vous êtes sur le même réseau WiFi.',
+      });
     }
   };
 
@@ -65,7 +87,11 @@ export default function StravaConnectButton({ onAuthSuccess, onAuthError }: Prop
       const { code } = response.params;
       handleAuthorizationCode(code);
     } else if (response?.type === 'error') {
-      Alert.alert('Erreur', 'Échec de la connexion à Strava');
+      showPopup({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Échec de la connexion à Strava',
+      });
       setIsLoading(false);
       onAuthError?.('Échec de la connexion à Strava');
     } else if (response?.type === 'dismiss') {
@@ -80,11 +106,19 @@ export default function StravaConnectButton({ onAuthSuccess, onAuthError }: Prop
       if (tokenResponse) {
         onAuthSuccess();
       } else {
-        Alert.alert('Erreur', 'Impossible d\'obtenir le token d\'accès');
+        showPopup({
+          type: 'error',
+          title: 'Erreur',
+          message: 'Impossible d\'obtenir le token d\'accès',
+        });
         onAuthError?.('Impossible d\'obtenir le token d\'accès');
       }
     } catch (error) {
-      Alert.alert('Erreur', 'Une erreur est survenue lors de la connexion');
+      showPopup({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Une erreur est survenue lors de la connexion',
+      });
       onAuthError?.('Une erreur est survenue lors de la connexion');
     } finally {
       setIsLoading(false);
@@ -96,7 +130,11 @@ export default function StravaConnectButton({ onAuthSuccess, onAuthError }: Prop
     try {
       await promptAsync();
     } catch (error) {
-      Alert.alert('Erreur', 'Impossible de se connecter à Strava');
+      showPopup({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Impossible de se connecter à Strava',
+      });
       setIsLoading(false);
       onAuthError?.('Impossible de se connecter à Strava');
     }
@@ -123,6 +161,14 @@ export default function StravaConnectButton({ onAuthSuccess, onAuthError }: Prop
           <Text style={styles.buttonText}>Se connecter avec Strava</Text>
         )}
       </TouchableOpacity>
+
+      <Popup
+        visible={popup.visible}
+        type={popup.type}
+        title={popup.title}
+        message={popup.message}
+        onClose={hidePopup}
+      />
     </View>
   );
 }

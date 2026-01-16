@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   ScrollView,
   Image,
-  Alert,
   RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,6 +15,7 @@ import { CompositeNavigationProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainTabParamList } from '../App';
 import stravaService, { StravaAthlete, StravaActivity } from '../services/stravaService';
+import Popup from '../components/Popup';
 import { colors, fonts, spacing, borderRadius, shadows } from '../constants/theme';
 
 type StravaProfileScreenNavigationProp = CompositeNavigationProp<
@@ -27,12 +27,36 @@ type Props = {
   navigation: StravaProfileScreenNavigationProp;
 };
 
+interface PopupState {
+  visible: boolean;
+  type: 'success' | 'error' | 'info' | 'warning';
+  title: string;
+  message: string;
+  onConfirm?: () => void;
+  confirmText?: string;
+  showCancel?: boolean;
+}
+
 export default function StravaProfileScreen({ navigation }: Props) {
   const [athlete, setAthlete] = useState<StravaAthlete | null>(null);
   const [activities, setActivities] = useState<StravaActivity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isStravaLinked, setIsStravaLinked] = useState(false);
+  const [popup, setPopup] = useState<PopupState>({
+    visible: false,
+    type: 'info',
+    title: '',
+    message: '',
+  });
+
+  const showPopup = (config: Omit<PopupState, 'visible'>) => {
+    setPopup({ ...config, visible: true });
+  };
+
+  const hidePopup = () => {
+    setPopup(prev => ({ ...prev, visible: false }));
+  };
 
   useEffect(() => {
     checkStravaConnection();
@@ -71,7 +95,11 @@ export default function StravaProfileScreen({ navigation }: Props) {
       }
     } catch (error) {
       console.error('Error loading data:', error);
-      Alert.alert('Erreur', 'Impossible de charger les données');
+      showPopup({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Impossible de charger les données',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -84,43 +112,36 @@ export default function StravaProfileScreen({ navigation }: Props) {
   };
 
   const handleLinkStrava = () => {
-    Alert.alert(
-      'Connecter Strava',
-      'Connectez votre compte Strava pour synchroniser vos activités',
-      [
-        {
-          text: 'Annuler',
-          style: 'cancel',
-        },
-        {
-          text: 'Connecter',
-          onPress: () => {
-            Alert.alert('Info', 'Fonctionnalité de connexion Strava à venir');
-          },
-        },
-      ]
-    );
+    showPopup({
+      type: 'info',
+      title: 'Connecter Strava',
+      message: 'Connectez votre compte Strava pour synchroniser vos activités',
+      showCancel: true,
+      confirmText: 'Connecter',
+      onConfirm: () => {
+        hidePopup();
+        showPopup({
+          type: 'info',
+          title: 'Info',
+          message: 'Fonctionnalité de connexion Strava à venir',
+        });
+      },
+    });
   };
 
-  const handleLogout = async () => {
-    Alert.alert(
-      'Déconnexion',
-      'Voulez-vous vraiment vous déconnecter de Strava?',
-      [
-        {
-          text: 'Annuler',
-          style: 'cancel',
-        },
-        {
-          text: 'Déconnexion',
-          style: 'destructive',
-          onPress: async () => {
-            await stravaService.logout();
-            navigation.navigate('StravaLogin');
-          },
-        },
-      ]
-    );
+  const handleLogout = () => {
+    showPopup({
+      type: 'warning',
+      title: 'Déconnexion',
+      message: 'Voulez-vous vraiment vous déconnecter de Strava?',
+      showCancel: true,
+      confirmText: 'Déconnexion',
+      onConfirm: async () => {
+        await stravaService.logout();
+        hidePopup();
+        navigation.navigate('StravaLogin');
+      },
+    });
   };
 
   const formatDistance = (meters: number): string => {
@@ -256,6 +277,17 @@ export default function StravaProfileScreen({ navigation }: Props) {
           </View>
         </>
       )}
+
+      <Popup
+        visible={popup.visible}
+        type={popup.type}
+        title={popup.title}
+        message={popup.message}
+        onClose={hidePopup}
+        onConfirm={popup.onConfirm}
+        confirmText={popup.confirmText}
+        showCancel={popup.showCancel}
+      />
     </ScrollView>
   );
 }

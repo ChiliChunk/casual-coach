@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons, AntDesign } from '@expo/vector-icons';
 import CreatePlanForm from '../components/CreatePlanForm';
 import PlanDetails from '../components/PlanDetails';
 import TrainingActivities from '../components/TrainingActivities';
-import SuccessPopup from '../components/SuccessPopup';
+import Popup from '../components/Popup';
 import { storageService, TrainingPlan, TrainingSchedule } from '../services/storageService';
 import { API_CONFIG } from '../config/api.config';
 import stravaService from '../services/stravaService';
 import { colors, fonts, spacing, borderRadius, shadows } from '../constants/theme';
+
+interface PopupState {
+  visible: boolean;
+  type: 'success' | 'error' | 'info' | 'warning';
+  title: string;
+  message: string;
+  onConfirm?: () => void;
+  confirmText?: string;
+  showCancel?: boolean;
+  buttonText?: string;
+}
 
 export default function PlanScreen() {
   const [hasPlan, setHasPlan] = useState(false);
@@ -17,7 +28,20 @@ export default function PlanScreen() {
   const [loading, setLoading] = useState(true);
   const [generatingWorkouts, setGeneratingWorkouts] = useState(false);
   const [trainingSchedule, setTrainingSchedule] = useState<TrainingSchedule | null>(null);
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [popup, setPopup] = useState<PopupState>({
+    visible: false,
+    type: 'info',
+    title: '',
+    message: '',
+  });
+
+  const showPopup = (config: Omit<PopupState, 'visible'>) => {
+    setPopup({ ...config, visible: true });
+  };
+
+  const hidePopup = () => {
+    setPopup(prev => ({ ...prev, visible: false }));
+  };
 
   useEffect(() => {
     loadPlan();
@@ -56,37 +80,35 @@ export default function PlanScreen() {
     loadPlan();
   };
 
-  const handleDeletePlan = async () => {
-    Alert.alert(
-      'Supprimer le plan',
-      'Êtes-vous sûr de vouloir supprimer ce plan d\'entraînement et toutes les séances associées ?',
-      [
-        {
-          text: 'Annuler',
-          style: 'cancel',
-        },
-        {
-          text: 'Supprimer',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await storageService.deleteTrainingPlan();
-              await storageService.deleteTrainingSessions();
-              setPlanData(null);
-              setTrainingSchedule(null);
-              setHasPlan(false);
-            } catch (error) {
-              console.error('Erreur lors de la suppression du plan:', error);
-            }
-          },
-        },
-      ]
-    );
+  const handleDeletePlan = () => {
+    showPopup({
+      type: 'warning',
+      title: 'Supprimer le plan',
+      message: 'Êtes-vous sûr de vouloir supprimer ce plan d\'entraînement et toutes les séances associées ?',
+      showCancel: true,
+      confirmText: 'Supprimer',
+      onConfirm: async () => {
+        try {
+          await storageService.deleteTrainingPlan();
+          await storageService.deleteTrainingSessions();
+          setPlanData(null);
+          setTrainingSchedule(null);
+          setHasPlan(false);
+          hidePopup();
+        } catch (error) {
+          console.error('Erreur lors de la suppression du plan:', error);
+        }
+      },
+    });
   };
 
   const handleGenerateWorkouts = async () => {
     if (!planData) {
-      Alert.alert('Erreur', 'Aucun plan disponible');
+      showPopup({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Aucun plan disponible',
+      });
       return;
     }
 
@@ -117,14 +139,27 @@ export default function PlanScreen() {
       if (result.success) {
         setTrainingSchedule(result.data);
         await storageService.saveTrainingSessions(result.data);
-        setShowSuccessPopup(true);
+        showPopup({
+          type: 'success',
+          title: 'Séances générées',
+          message: 'Votre programme d\'entraînement a été créé avec succès !',
+          buttonText: 'Voir le programme',
+        });
         console.log('Training plan generated:', result.data);
       } else {
-        Alert.alert('Erreur', result.message || 'Erreur lors de la génération des séances');
+        showPopup({
+          type: 'error',
+          title: 'Erreur',
+          message: result.message || 'Erreur lors de la génération des séances',
+        });
       }
     } catch (error) {
       console.error('Error generating workouts:', error);
-      Alert.alert('Erreur', 'Impossible de générer les séances');
+      showPopup({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Impossible de générer les séances',
+      });
     } finally {
       setGeneratingWorkouts(false);
     }
@@ -219,9 +254,16 @@ export default function PlanScreen() {
         </View>
       </ScrollView>
 
-      <SuccessPopup
-        visible={showSuccessPopup}
-        onClose={() => setShowSuccessPopup(false)}
+      <Popup
+        visible={popup.visible}
+        type={popup.type}
+        title={popup.title}
+        message={popup.message}
+        onClose={hidePopup}
+        onConfirm={popup.onConfirm}
+        confirmText={popup.confirmText}
+        showCancel={popup.showCancel}
+        buttonText={popup.buttonText}
       />
     </>
   );
