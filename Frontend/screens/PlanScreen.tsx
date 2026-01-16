@@ -4,6 +4,7 @@ import { Ionicons, AntDesign } from '@expo/vector-icons';
 import CreatePlanForm from '../components/CreatePlanForm';
 import PlanDetails from '../components/PlanDetails';
 import TrainingActivities from '../components/TrainingActivities';
+import SuccessPopup from '../components/SuccessPopup';
 import { storageService, TrainingPlan, TrainingSchedule } from '../services/storageService';
 import { API_CONFIG } from '../config/api.config';
 import stravaService from '../services/stravaService';
@@ -218,35 +219,10 @@ export default function PlanScreen() {
         </View>
       </ScrollView>
 
-      <Modal
+      <SuccessPopup
         visible={showSuccessPopup}
-        transparent={true}
-        animationType="fade"
-        statusBarTranslucent
-        onRequestClose={() => setShowSuccessPopup(false)}
-      >
-        <TouchableOpacity
-          style={styles.popupOverlay}
-          activeOpacity={1}
-          onPress={() => setShowSuccessPopup(false)}
-        >
-          <View style={styles.popupCard}>
-            <View style={styles.popupIconContainer}>
-              <Ionicons name="checkmark-circle" size={48} color={colors.success} />
-            </View>
-            <Text style={styles.popupTitle}>Séances générées</Text>
-            <Text style={styles.popupMessage}>
-              Votre programme d'entraînement a été créé avec succès !
-            </Text>
-            <TouchableOpacity
-              style={styles.popupButton}
-              onPress={() => setShowSuccessPopup(false)}
-            >
-              <Text style={styles.popupButtonText}>Voir le programme</Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </Modal>
+        onClose={() => setShowSuccessPopup(false)}
+      />
     </>
   );
 }
@@ -309,54 +285,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.family,
     fontWeight: fonts.weights.semibold,
     marginLeft: spacing.md,
-  },
-  popupOverlay: {
-    flex: 1,
-    backgroundColor: colors.overlay,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  popupCard: {
-    backgroundColor: colors.card,
-    borderRadius: borderRadius.xl,
-    padding: spacing.xxl,
-    alignItems: 'center',
-    width: '100%',
-    maxWidth: 320,
-    ...shadows.lg,
-  },
-  popupIconContainer: {
-    marginBottom: spacing.lg,
-  },
-  popupTitle: {
-    fontSize: fonts.sizes.xl,
-    fontWeight: fonts.weights.bold,
-    fontFamily: fonts.family,
-    color: colors.text,
-    marginBottom: spacing.sm,
-    textAlign: 'center',
-  },
-  popupMessage: {
-    fontSize: fonts.sizes.md,
-    fontFamily: fonts.family,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.xl,
-    lineHeight: 20,
-  },
-  popupButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.xxl,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
-    width: '100%',
-    alignItems: 'center',
-  },
-  popupButtonText: {
-    color: colors.textInverse,
-    fontSize: fonts.sizes.lg,
-    fontFamily: fonts.family,
-    fontWeight: fonts.weights.semibold,
   },
 });
