@@ -11,6 +11,7 @@ export interface TrainingPlan {
   frequency: string;
   duration: string;
   user_presentation: string;
+  stravaConnected?: boolean;
   createdAt: string;
 }
 

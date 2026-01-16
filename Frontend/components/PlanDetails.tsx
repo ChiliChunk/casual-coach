@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Animated } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { TrainingPlan } from '../services/storageService';
 import { colors, fonts, spacing, borderRadius, shadows } from '../constants/theme';
 
@@ -78,7 +78,19 @@ export default function PlanDetails({ planData, hasSchedule, generatingWorkouts,
           <Text style={styles.infoLabel}>Durée</Text>
           <Text style={styles.infoValue}>{planData.duration} sem.</Text>
         </View>
-        <View style={styles.infoItem} />
+        <View style={styles.infoItem}>
+          <FontAwesome5
+            name="strava"
+            size={20}
+            color={colors.accent}
+          />
+          <Text style={styles.infoLabel}>Strava</Text>
+          <Ionicons
+            name={planData.stravaConnected ? "checkmark" : "close"}
+            size={20}
+            color={planData.stravaConnected ? colors.success : colors.textMuted}
+          />
+        </View>
       </View>
       <View style={styles.dateSection}>
         <Ionicons name="checkmark-circle" size={16} color={colors.textMuted} />

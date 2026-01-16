@@ -59,6 +59,7 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
     frequency: '',
     duration: '',
     user_presentation: '',
+    stravaConnected: false,
   });
 
   const slideAnim = useRef(new Animated.Value(0)).current;
@@ -184,6 +185,7 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
   };
 
   const handleStravaConnected = () => {
+    setFormData(prev => ({ ...prev, stravaConnected: true }));
     setTimeout(handleNext, 500);
   };
 
@@ -278,7 +280,7 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
                   placeholder={question.placeholder || 'Entrez un nombre'}
                   placeholderTextColor={colors.textMuted}
                   keyboardType="numeric"
-                  value={formData[question.id as keyof typeof formData]}
+                  value={formData[question.id as keyof typeof formData] as string}
                   onChangeText={(value) => handleNumberInput(question.id, value)}
                   maxLength={question.id === 'course_elevation' ? 5 : 3}
                 />
@@ -294,7 +296,7 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
                   style={styles.textInput}
                   placeholder={question.placeholder || 'Entrez votre réponse'}
                   placeholderTextColor={colors.textMuted}
-                  value={formData[question.id as keyof typeof formData]}
+                  value={formData[question.id as keyof typeof formData] as string}
                   onChangeText={(value) => handleTextInput(question.id, value)}
                   maxLength={50}
                   autoCapitalize="words"
@@ -308,7 +310,7 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
                   style={[styles.textInput, styles.multilineInput]}
                   placeholder={question.placeholder || 'Entrez votre réponse'}
                   placeholderTextColor={colors.textMuted}
-                  value={formData[question.id as keyof typeof formData]}
+                  value={formData[question.id as keyof typeof formData] as string}
                   onChangeText={(value) => handleTextInput(question.id, value)}
                   maxLength={300}
                   multiline
