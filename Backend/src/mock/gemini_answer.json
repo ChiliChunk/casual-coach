@@ -9,7 +9,7 @@
           "title": "Footing & Côtes courtes",
           "intensity": "modérée",
           "description": "Séance pour réveiller les fibres musculaires utiles en montée.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Échauffement",
@@ -30,7 +30,7 @@
           "title": "Endurance fondamentale",
           "intensity": "faible",
           "description": "Footing de régénération pour construire la base aérobie.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Footing continu",
@@ -43,7 +43,7 @@
           "title": "Sortie Longue Trail - Volume 1",
           "intensity": "modérée",
           "description": "Première sortie longue. Chercher un peu de dénivelé si possible.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Sortie Longue",
@@ -56,7 +56,7 @@
           "title": "Vélo ou Natation",
           "intensity": "faible",
           "description": "Entraînement croisé pour le volume sans impact.",
-          "optionnal": "True",
+          "optional": true,
           "exercises": [
             {
               "name": "Activité portée",
@@ -75,7 +75,7 @@
           "title": "Renforcement & Côtes",
           "intensity": "élevée",
           "description": "Travail de puissance musculaire pour encaisser les 2300m D+.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Échauffement",
@@ -96,7 +96,7 @@
           "title": "Endurance active",
           "intensity": "modérée",
           "description": "Footing avec légère variation d'allure.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Footing progressif",
@@ -109,7 +109,7 @@
           "title": "Sortie Longue Vallonnée",
           "intensity": "modérée",
           "description": "Augmentation de la durée.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Sortie Trail",
@@ -122,7 +122,7 @@
           "title": "Récupération active",
           "intensity": "faible",
           "description": "Petit footing ou vélo.",
-          "optionnal": "True",
+          "optional": true,
           "exercises": [
             {
               "name": "Footing léger",
@@ -141,7 +141,7 @@
           "title": "Seuil en côte (Myo-cross)",
           "intensity": "élevée",
           "description": "Travail de résistance à l'effort en montée.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Échauffement",
@@ -162,7 +162,7 @@
           "title": "Footing cool",
           "intensity": "faible",
           "description": "Assimilation de la séance précédente.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Endurance",
@@ -175,7 +175,7 @@
           "title": "Rando-Course longue",
           "intensity": "modérée",
           "description": "Simulation allure course. Gestion de l'effort.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Sortie Longue",
@@ -188,7 +188,7 @@
           "title": "Vélo",
           "intensity": "faible",
           "description": "Mouliner les jambes.",
-          "optionnal": "True",
+          "optional": true,
           "exercises": [
             {
               "name": "Vélo route/home trainer",
@@ -207,7 +207,7 @@
           "title": "VMA Ascensionnelle",
           "intensity": "élevée",
           "description": "Améliorer la capacité cardiaque en côte.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Cœur de séance",
@@ -220,7 +220,7 @@
           "title": "Endurance et proprioception",
           "intensity": "faible",
           "description": "Footing sur terrain technique si possible.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Footing technique",
@@ -233,7 +233,7 @@
           "title": "Sortie Longue avec D+",
           "intensity": "modérée",
           "description": "Accumulation de dénivelé.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Sortie Trail",
@@ -246,7 +246,7 @@
           "title": "Renforcement musculaire",
           "intensity": "modérée",
           "description": "Gainage et jambes.",
-          "optionnal": "True",
+          "optional": true,
           "exercises": [
             {
               "name": "PPG",
@@ -265,7 +265,7 @@
           "title": "Fartlek Nature",
           "intensity": "élevée",
           "description": "Jeux d'allure en terrain varié.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Fartlek",
@@ -278,7 +278,7 @@
           "title": "Pré-fatigue (Samedi)",
           "intensity": "modérée",
           "description": "Première partie du week-end choc.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Footing actif",
@@ -291,7 +291,7 @@
           "title": "Sortie Longue MAXX (Dimanche)",
           "intensity": "modérée",
           "description": "Courir sur la fatigue de la veille.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Endurance Trail",
@@ -304,7 +304,7 @@
           "title": "Vélo",
           "intensity": "faible",
           "description": "Optionnel pour ajouter du volume sans chocs.",
-          "optionnal": "True",
+          "optional": true,
           "exercises": [
             {
               "name": "Sortie vélo",
@@ -323,7 +323,7 @@
           "title": "Footing léger",
           "intensity": "faible",
           "description": "Récupération du bloc précédent.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Décrassage",
@@ -336,7 +336,7 @@
           "title": "Rappels de vitesse",
           "intensity": "modérée",
           "description": "Garder du dynamisme sans fatiguer.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Lignes droites",
@@ -349,7 +349,7 @@
           "title": "Sortie plaisir",
           "intensity": "faible",
           "description": "Pas de montre, juste les sensations.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Endurance",
@@ -362,7 +362,7 @@
           "title": "Repos complet",
           "intensity": "nulle",
           "description": "Profiter pour dormir et s'étirer.",
-          "optionnal": "True",
+          "optional": true,
           "exercises": [
             {
               "name": "Stretching",
@@ -381,7 +381,7 @@
           "title": "Travail en descente",
           "intensity": "élevée",
           "description": "Préparer les quadriceps aux chocs excentriques.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Côtes/Descentes",
@@ -394,7 +394,7 @@
           "title": "Endurance",
           "intensity": "faible",
           "description": "Volume simple.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Footing",
@@ -407,7 +407,7 @@
           "title": "Dernière très grosse sortie",
           "intensity": "modérée",
           "description": "Le test final avant l'affûtage. Test matériel complet.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Trail Long",
@@ -420,7 +420,7 @@
           "title": "Vélo",
           "intensity": "faible",
           "description": "Récupération.",
-          "optionnal": "True",
+          "optional": true,
           "exercises": [
             {
               "name": "Vélo",
@@ -439,7 +439,7 @@
           "title": "Seuil maintenu",
           "intensity": "élevée",
           "description": "Garder l'intensité mais réduire le volume global.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Seuil",
@@ -452,7 +452,7 @@
           "title": "Endurance 1h",
           "intensity": "faible",
           "description": "Entretien.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Footing",
@@ -465,7 +465,7 @@
           "title": "Sortie Longue réduite",
           "intensity": "modérée",
           "description": "On diminue la durée de la sortie longue.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Sortie Trail",
@@ -478,7 +478,7 @@
           "title": "Optionnel",
           "intensity": "faible",
           "description": "Repos conseillé.",
-          "optionnal": "True",
+          "optional": true,
           "exercises": [
             {
               "name": "Repos",
@@ -497,7 +497,7 @@
           "title": "Rappel d'allure",
           "intensity": "modérée",
           "description": "Juste pour faire tourner les jambes.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Fartlek court",
@@ -510,7 +510,7 @@
           "title": "Petit footing",
           "intensity": "faible",
           "description": "Réduction drastique du volume.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Endurance",
@@ -523,7 +523,7 @@
           "title": "Sortie courte dynamique",
           "intensity": "modérée",
           "description": "Dernière sortie > 1h.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Sortie",
@@ -536,7 +536,7 @@
           "title": "Repos",
           "intensity": "nulle",
           "description": "Faire du jus.",
-          "optionnal": "True",
+          "optional": true,
           "exercises": [
             {
               "name": "Sommeil",
@@ -555,7 +555,7 @@
           "title": "Déblocage (J-3 ou J-4)",
           "intensity": "faible",
           "description": "Garder le tonus.",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "Footing + Lignes",
@@ -568,7 +568,7 @@
           "title": "Activation (Veille de course - Optionnel)",
           "intensity": "faible",
           "description": "Seulement si habitude de courir la veille.",
-          "optionnal": "True",
+          "optional": true,
           "exercises": [
             {
               "name": "Shakeout run",
@@ -581,7 +581,7 @@
           "title": "JOUR J : TRAIL DES 3 PICS",
           "intensity": "élevée",
           "description": "33km - 2300 D+",
-          "optionnal": "False",
+          "optional": false,
           "exercises": [
             {
               "name": "La Course",

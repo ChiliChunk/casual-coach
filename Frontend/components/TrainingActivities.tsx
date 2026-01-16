@@ -45,9 +45,9 @@ function SessionCard({ session, weekNumber, isExpanded, onToggleExpanded, onTogg
 
   return (
     <Animated.View style={[
+      session.optional && styles.sessionCardOptional,
       styles.sessionCard,
       { backgroundColor, borderColor, opacity },
-      session.optional && styles.sessionCardOptional
     ]}>
       <TouchableOpacity 
         onPress={onToggleExpanded}
@@ -156,16 +156,21 @@ export default function TrainingActivities({ trainingSchedule, onToggleDone }: T
     );
   };
 
-  const renderWeek = (week: Week) => (
-    <View key={`week-${week.week_number}`} style={styles.weekContainer}>
-      <View style={styles.weekHeader}>
-        <Text style={styles.weekTitle}>S{week.week_number}</Text>
-        <View style={styles.weekDivider} />
-        <Text style={styles.weekFocus}>{week.focus}</Text>
+  const renderWeek = (week: Week) => {
+    if (week.week_number === 1) {
+      console.log('Week 1 sessions optional values:', week.sessions.map(s => ({ session: s.session_number, optional: s.optional })));
+    }
+    return (
+      <View key={`week-${week.week_number}`} style={styles.weekContainer}>
+        <View style={styles.weekHeader}>
+          <Text style={styles.weekTitle}>S{week.week_number}</Text>
+          <View style={styles.weekDivider} />
+          <Text style={styles.weekFocus}>{week.focus}</Text>
+        </View>
+        {week.sessions.map((session) => renderSession(session, week.week_number))}
       </View>
-      {week.sessions.map((session) => renderSession(session, week.week_number))}
-    </View>
-  );
+    );
+  };
 
   return (
     <View style={styles.scheduleContainer}>
@@ -231,7 +236,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   sessionCardOptional: {
-    borderStyle: 'dashed',
+    borderStyle: 'dashed'
   },
   sessionCardDone: {
     backgroundColor: 'rgba(30, 40, 60, 0.5)',
