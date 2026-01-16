@@ -10,6 +10,7 @@ import {
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import stravaService, { StravaConfig } from '../services/stravaService';
+import { colors, fonts, spacing, borderRadius, shadows } from '../constants/theme';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -130,47 +131,47 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: spacing.xl,
   },
   logo: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#FF6B35',
-    marginBottom: 20,
+    fontSize: fonts.sizes.xxxl,
+    fontWeight: fonts.weights.bold,
+    fontFamily: fonts.family,
+    color: colors.accent,
+    marginBottom: spacing.xl,
     letterSpacing: 4,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 10,
+    fontSize: fonts.sizes.xxl,
+    fontWeight: fonts.weights.bold,
+    fontFamily: fonts.family,
+    color: colors.text,
+    marginBottom: spacing.md,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
-    color: '#b0b0b0',
-    marginBottom: 40,
+    fontSize: fonts.sizes.lg,
+    fontFamily: fonts.family,
+    color: colors.textSecondary,
+    marginBottom: spacing.xxxl,
     textAlign: 'center',
   },
   button: {
-    backgroundColor: 'rgba(252, 76, 2, 0.9)',
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 10,
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.xxxl,
+    paddingVertical: spacing.lg,
+    borderRadius: borderRadius.md,
     width: '100%',
-    elevation: 3,
-    shadowColor: '#FC4C02',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 3.84,
+    ...shadows.md,
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
+    color: colors.textInverse,
+    fontSize: fonts.sizes.lg,
+    fontWeight: fonts.weights.semibold,
+    fontFamily: fonts.family,
     textAlign: 'center',
   },
 });

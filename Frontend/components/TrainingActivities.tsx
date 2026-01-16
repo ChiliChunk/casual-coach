@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TrainingSchedule, Exercise, Session, Week } from '../services/storageService';
+import { colors, fonts, spacing, borderRadius } from '../constants/theme';
 
 interface TrainingActivitiesProps {
   trainingSchedule: TrainingSchedule;
@@ -30,12 +31,12 @@ function SessionCard({ session, weekNumber, isExpanded, onToggleExpanded, onTogg
 
   const backgroundColor = animatedValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ['rgba(45, 45, 45, 0.7)', 'rgba(30, 40, 60, 0.5)'],
+    outputRange: [colors.card, colors.backgroundSecondary],
   });
 
   const borderColor = animatedValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ['rgba(252, 76, 2, 0.2)', 'rgba(33, 150, 243, 0.3)'],
+    outputRange: [colors.border, colors.success],
   });
 
   const opacity = animatedValue.interpolate({
@@ -65,10 +66,10 @@ function SessionCard({ session, weekNumber, isExpanded, onToggleExpanded, onTogg
                 }}
                 style={styles.checkboxContainer}
               >
-                <Ionicons 
-                  name={session.done ? "checkmark-circle" : "ellipse-outline"} 
-                  size={24} 
-                  color={session.done ? "#4CAF50" : "#666"} 
+                <Ionicons
+                  name={session.done ? "checkmark-circle" : "ellipse-outline"}
+                  size={24}
+                  color={session.done ? colors.success : colors.textMuted}
                 />
               </TouchableOpacity>
               <Text style={[styles.sessionNumber, session.done && styles.sessionNumberDone]}>
@@ -79,10 +80,10 @@ function SessionCard({ session, weekNumber, isExpanded, onToggleExpanded, onTogg
               <View style={[styles.intensityBadge, { backgroundColor: getIntensityColor(session.intensity) }]}>
                 <Text style={styles.intensityText}>{session.intensity}</Text>
               </View>
-              <Ionicons 
-                name={isExpanded ? "chevron-up" : "chevron-down"} 
-                size={20} 
-                color="#b0b0b0" 
+              <Ionicons
+                name={isExpanded ? "chevron-up" : "chevron-down"}
+                size={20}
+                color={colors.textSecondary}
               />
             </View>
           </View>
@@ -96,7 +97,7 @@ function SessionCard({ session, weekNumber, isExpanded, onToggleExpanded, onTogg
           <View style={styles.exercisesContainer}>
             {session.exercises.map((exercise, index) => (
               <View key={`exercise-${index}`} style={styles.exerciseItem}>
-                <Ionicons name="fitness-outline" size={16} color="#FF6B35" />
+                <Ionicons name="fitness-outline" size={16} color={colors.accent} />
                 <View style={styles.exerciseContent}>
                   <Text style={styles.exerciseName}>{exercise.name}</Text>
                   <Text style={styles.exerciseDetails}>{exercise.details}</Text>
@@ -116,13 +117,13 @@ export default function TrainingActivities({ trainingSchedule, onToggleDone }: T
   const getIntensityColor = (intensity: string) => {
     switch (intensity.toLowerCase()) {
       case 'élevée':
-        return '#FF6B35';
+        return colors.error;
       case 'modérée':
-        return '#FFA500';
+        return colors.warning;
       case 'faible':
-        return '#4CAF50';
+        return colors.success;
       default:
-        return '#999';
+        return colors.textMuted;
     }
   };
 
@@ -184,144 +185,153 @@ export default function TrainingActivities({ trainingSchedule, onToggleDone }: T
 
 const styles = StyleSheet.create({
   scheduleContainer: {
-    marginTop: 30,
+    marginTop: spacing.xxxl,
   },
   scheduleHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-    paddingBottom: 15,
+    marginBottom: spacing.xl,
+    paddingBottom: spacing.lg,
     borderBottomWidth: 2,
-    borderBottomColor: 'rgba(252, 76, 2, 0.3)',
+    borderBottomColor: colors.border,
   },
   scheduleTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ffffff',
+    fontSize: fonts.sizes.xl,
+    fontWeight: fonts.weights.bold,
+    fontFamily: fonts.family,
+    color: colors.text,
   },
   weekContainer: {
-    marginBottom: 25,
+    marginBottom: spacing.xxl,
   },
   weekHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    marginBottom: 12,
-    paddingBottom: 8,
+    gap: spacing.md,
+    marginBottom: spacing.md,
+    paddingBottom: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(252, 76, 2, 0.2)',
+    borderBottomColor: colors.borderLight,
   },
   weekTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#FF6B35',
+    fontSize: fonts.sizes.md,
+    fontWeight: fonts.weights.bold,
+    fontFamily: fonts.family,
+    color: colors.accent,
     minWidth: 30,
   },
   weekDivider: {
     width: 1,
     height: 14,
-    backgroundColor: 'rgba(252, 76, 2, 0.3)',
+    backgroundColor: colors.border,
   },
   weekFocus: {
-    fontSize: 12,
-    color: '#999',
+    fontSize: fonts.sizes.sm,
+    fontFamily: fonts.family,
+    color: colors.textMuted,
     fontStyle: 'italic',
     flex: 1,
   },
   sessionCard: {
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 12,
+    borderRadius: borderRadius.md,
+    padding: spacing.lg,
+    marginBottom: spacing.md,
     borderWidth: 1,
   },
   sessionCardOptional: {
-    borderStyle: 'dashed'
+    borderStyle: 'dashed',
   },
   sessionCardDone: {
-    backgroundColor: 'rgba(30, 40, 60, 0.5)',
-    borderColor: 'rgba(33, 150, 243, 0.3)',
+    backgroundColor: colors.backgroundSecondary,
+    borderColor: colors.success,
     opacity: 0.7,
   },
   sessionHeader: {
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   sessionTitleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   sessionTitleLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: spacing.sm,
   },
   checkboxContainer: {
-    padding: 4,
+    padding: spacing.xs,
   },
   sessionTitleRowRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: spacing.sm,
   },
   sessionNumber: {
-    fontSize: 12,
-    color: '#b0b0b0',
-    fontWeight: '600',
+    fontSize: fonts.sizes.sm,
+    fontFamily: fonts.family,
+    color: colors.textSecondary,
+    fontWeight: fonts.weights.semibold,
   },
   sessionNumberDone: {
     textDecorationLine: 'line-through',
-    color: '#666',
+    color: colors.textMuted,
   },
   intensityBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.lg,
   },
   intensityText: {
-    fontSize: 11,
-    color: '#ffffff',
-    fontWeight: '600',
+    fontSize: fonts.sizes.xs,
+    fontFamily: fonts.family,
+    color: colors.textInverse,
+    fontWeight: fonts.weights.semibold,
     textTransform: 'capitalize',
   },
   sessionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 6,
+    fontSize: fonts.sizes.lg,
+    fontWeight: fonts.weights.bold,
+    fontFamily: fonts.family,
+    color: colors.text,
+    marginBottom: spacing.xs,
   },
   sessionTitleDone: {
     textDecorationLine: 'line-through',
-    color: '#999',
+    color: colors.textMuted,
   },
   sessionDescription: {
-    fontSize: 13,
-    color: '#b0b0b0',
+    fontSize: fonts.sizes.sm,
+    fontFamily: fonts.family,
+    color: colors.textSecondary,
     lineHeight: 18,
   },
   exercisesContainer: {
-    gap: 10,
+    gap: spacing.md,
   },
   exerciseItem: {
     flexDirection: 'row',
-    gap: 10,
-    paddingTop: 10,
+    gap: spacing.md,
+    paddingTop: spacing.md,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(252, 76, 2, 0.1)',
+    borderTopColor: colors.borderLight,
   },
   exerciseContent: {
     flex: 1,
   },
   exerciseName: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#FF6B35',
-    marginBottom: 4,
+    fontSize: fonts.sizes.sm,
+    fontWeight: fonts.weights.semibold,
+    fontFamily: fonts.family,
+    color: colors.accent,
+    marginBottom: spacing.xs,
   },
   exerciseDetails: {
-    fontSize: 12,
-    color: '#d0d0d0',
+    fontSize: fonts.sizes.sm,
+    fontFamily: fonts.family,
+    color: colors.textSecondary,
     lineHeight: 17,
   },
 });

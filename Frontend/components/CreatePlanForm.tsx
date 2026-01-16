@@ -18,6 +18,7 @@ import stravaService from '../services/stravaService';
 import axios from 'axios';
 import { API_CONFIG } from '../config/api.config';
 import StravaConnectButton from './StravaConnectButton';
+import { colors, fonts, spacing, borderRadius, shadows } from '../constants/theme';
 
 const { width } = Dimensions.get('window');
 
@@ -180,7 +181,7 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
     >
       <View style={styles.header}>
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-          <Ionicons name="close" size={28} color="#FF6B35" />
+          <Ionicons name="close" size={28} color={colors.primary} />
         </TouchableOpacity>
         <View style={styles.progressContainer}>
           {questions.map((_, index) => (
@@ -250,7 +251,7 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
                 <TextInput
                   style={styles.numberInput}
                   placeholder={question.placeholder || 'Entrez un nombre'}
-                  placeholderTextColor="#666"
+                  placeholderTextColor={colors.textMuted}
                   keyboardType="numeric"
                   value={formData[question.id as keyof typeof formData]}
                   onChangeText={(value) => handleNumberInput(question.id, value)}
@@ -267,7 +268,7 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
                 <TextInput
                   style={styles.textInput}
                   placeholder={question.placeholder || 'Entrez votre réponse'}
-                  placeholderTextColor="#666"
+                  placeholderTextColor={colors.textMuted}
                   value={formData[question.id as keyof typeof formData]}
                   onChangeText={(value) => handleTextInput(question.id, value)}
                   maxLength={50}
@@ -281,7 +282,7 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
                 <TextInput
                   style={[styles.textInput, styles.multilineInput]}
                   placeholder={question.placeholder || 'Entrez votre réponse'}
-                  placeholderTextColor="#666"
+                  placeholderTextColor={colors.textMuted}
                   value={formData[question.id as keyof typeof formData]}
                   onChangeText={(value) => handleTextInput(question.id, value)}
                   maxLength={300}
@@ -301,7 +302,7 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
             onPress={handlePrevious}
             style={styles.navButton}
           >
-            <Ionicons name="arrow-back" size={24} color="#FF6B35" />
+            <Ionicons name="arrow-back" size={24} color={colors.primary} />
             <Text style={styles.navButtonText}>Précédent</Text>
           </TouchableOpacity>
         )}
@@ -316,7 +317,7 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
             <Text style={styles.nextButtonText}>
               {isLastStep ? 'Créer le plan' : 'Suivant'}
             </Text>
-            <Ionicons name="arrow-forward" size={24} color="#fff" />
+            <Ionicons name="arrow-forward" size={24} color={colors.textInverse} />
           </TouchableOpacity>
         )}
       </View>
@@ -327,12 +328,12 @@ export default function CreatePlanForm({ onClose, onComplete }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: colors.background,
   },
   header: {
     paddingTop: 50,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.xl,
   },
   closeButton: {
     alignSelf: 'flex-end',
@@ -340,17 +341,17 @@ const styles = StyleSheet.create({
   progressContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
-    gap: 8,
+    marginTop: spacing.xl,
+    gap: spacing.sm,
   },
   progressDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: 'rgba(255, 107, 53, 0.3)',
+    backgroundColor: colors.borderLight,
   },
   progressDotActive: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: colors.primary,
   },
   slidesContainer: {
     flex: 1,
@@ -358,108 +359,120 @@ const styles = StyleSheet.create({
   },
   slide: {
     width: width,
-    paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingHorizontal: spacing.xxxl,
+    paddingTop: spacing.xxxl,
   },
   questionNumber: {
-    fontSize: 14,
-    color: '#b0b0b0',
-    marginBottom: 10,
+    fontSize: fonts.sizes.md,
+    fontFamily: fonts.family,
+    color: colors.textSecondary,
+    marginBottom: spacing.md,
   },
   questionText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 40,
+    fontSize: fonts.sizes.xxl,
+    fontWeight: fonts.weights.bold,
+    fontFamily: fonts.family,
+    color: colors.text,
+    marginBottom: spacing.xxxl,
   },
   optionsContainer: {
-    gap: 15,
+    gap: spacing.lg,
   },
   optionButton: {
-    backgroundColor: 'rgba(45, 45, 45, 0.7)',
-    padding: 20,
-    borderRadius: 12,
+    backgroundColor: colors.card,
+    padding: spacing.xl,
+    borderRadius: borderRadius.lg,
     borderWidth: 2,
-    borderColor: 'rgba(252, 76, 2, 0.2)',
+    borderColor: colors.border,
+    ...shadows.sm,
   },
   optionButtonSelected: {
-    backgroundColor: 'rgba(252, 76, 2, 0.2)',
-    borderColor: '#FF6B35',
+    backgroundColor: colors.backgroundSecondary,
+    borderColor: colors.primary,
   },
   optionText: {
-    fontSize: 18,
-    color: '#b0b0b0',
-    fontWeight: '500',
+    fontSize: fonts.sizes.xl,
+    fontFamily: fonts.family,
+    color: colors.textSecondary,
+    fontWeight: fonts.weights.medium,
   },
   optionTextSelected: {
-    color: '#FF6B35',
-    fontWeight: '600',
+    color: colors.primary,
+    fontWeight: fonts.weights.semibold,
   },
   navigation: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingBottom: 40,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.xxxl,
     alignItems: 'center',
   },
   navButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    padding: 12,
+    gap: spacing.sm,
+    padding: spacing.md,
   },
   navButtonText: {
-    fontSize: 16,
-    color: '#FF6B35',
-    fontWeight: '600',
+    fontSize: fonts.sizes.lg,
+    fontFamily: fonts.family,
+    color: colors.primary,
+    fontWeight: fonts.weights.semibold,
   },
   nextButton: {
-    backgroundColor: 'rgba(252, 76, 2, 0.9)',
-    borderRadius: 10,
-    paddingHorizontal: 20,
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.md,
+    paddingHorizontal: spacing.xl,
+    ...shadows.md,
   },
   nextButtonText: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '600',
+    fontSize: fonts.sizes.lg,
+    fontFamily: fonts.family,
+    color: colors.textInverse,
+    fontWeight: fonts.weights.semibold,
   },
   numberInputContainer: {
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: spacing.xl,
   },
   numberInput: {
-    backgroundColor: 'rgba(45, 45, 45, 0.7)',
+    backgroundColor: colors.card,
     borderWidth: 2,
-    borderColor: 'rgba(252, 76, 2, 0.2)',
-    borderRadius: 12,
-    padding: 20,
-    fontSize: 32,
-    color: '#FF6B35',
-    fontWeight: 'bold',
+    borderColor: colors.border,
+    borderRadius: borderRadius.lg,
+    padding: spacing.xl,
+    fontSize: fonts.sizes.xxxl,
+    fontFamily: fonts.family,
+    color: colors.accent,
+    fontWeight: fonts.weights.bold,
     textAlign: 'center',
     minWidth: 150,
+    ...shadows.sm,
   },
   unitText: {
-    fontSize: 18,
-    color: '#b0b0b0',
-    marginTop: 15,
-    fontWeight: '500',
+    fontSize: fonts.sizes.xl,
+    fontFamily: fonts.family,
+    color: colors.textSecondary,
+    marginTop: spacing.lg,
+    fontWeight: fonts.weights.medium,
   },
   textInputContainer: {
-    marginTop: 20,
+    marginTop: spacing.xl,
   },
   textInput: {
-    backgroundColor: 'rgba(45, 45, 45, 0.7)',
+    backgroundColor: colors.card,
     borderWidth: 2,
-    borderColor: 'rgba(252, 76, 2, 0.2)',
-    borderRadius: 12,
-    padding: 20,
-    fontSize: 20,
-    color: '#ffffff',
-    fontWeight: '500',
+    borderColor: colors.border,
+    borderRadius: borderRadius.lg,
+    padding: spacing.xl,
+    fontSize: fonts.sizes.xl,
+    fontFamily: fonts.family,
+    color: colors.text,
+    fontWeight: fonts.weights.medium,
+    ...shadows.sm,
   },
   multilineInput: {
     minHeight: 150,
-    paddingTop: 20,
+    paddingTop: spacing.xl,
   },
   stravaContainer: {
     flex: 1,

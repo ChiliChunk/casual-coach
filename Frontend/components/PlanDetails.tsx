@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TrainingPlan } from '../services/storageService';
+import { colors, fonts, spacing, borderRadius, shadows } from '../constants/theme';
 
 interface PlanDetailsProps {
   planData: TrainingPlan;
@@ -39,12 +40,12 @@ export default function PlanDetails({ planData, hasSchedule, generatingWorkouts,
         activeOpacity={0.7}
       >
         <View style={styles.courseTitleSection}>
-          <Ionicons name="trophy" size={24} color="#FF6B35" />
+          <Ionicons name="trophy" size={24} color={colors.accent} />
           <Text style={styles.courseTitle}>{planData.course_label}</Text>
-          <Ionicons 
-            name={isPlanExpanded ? "chevron-up" : "chevron-down"} 
-            size={24} 
-            color="#b0b0b0" 
+          <Ionicons
+            name={isPlanExpanded ? "chevron-up" : "chevron-down"}
+            size={24}
+            color={colors.textSecondary}
           />
         </View>
 
@@ -54,7 +55,7 @@ export default function PlanDetails({ planData, hasSchedule, generatingWorkouts,
 
             <View style={styles.infoGrid}>
               <View style={styles.infoItem}>
-                <Ionicons name="bicycle-outline" size={20} color="#FF6B35" />
+                <Ionicons name="bicycle-outline" size={20} color={colors.accent} />
                 <Text style={styles.infoLabel}>Type</Text>
                 <Text style={styles.infoValue}>
                   {getLabel('course_type', planData.course_type)}
@@ -62,7 +63,7 @@ export default function PlanDetails({ planData, hasSchedule, generatingWorkouts,
               </View>
 
               <View style={styles.infoItem}>
-                <Ionicons name="resize-outline" size={20} color="#FF6B35" />
+                <Ionicons name="resize-outline" size={20} color={colors.accent} />
                 <Text style={styles.infoLabel}>Distance</Text>
                 <Text style={styles.infoValue}>
                   {planData.course_km} km
@@ -70,7 +71,7 @@ export default function PlanDetails({ planData, hasSchedule, generatingWorkouts,
               </View>
 
               <View style={styles.infoItem}>
-                <Ionicons name="trending-up-outline" size={20} color="#FF6B35" />
+                <Ionicons name="trending-up-outline" size={20} color={colors.accent} />
                 <Text style={styles.infoLabel}>D+</Text>
                 <Text style={styles.infoValue}>
                   {planData.course_elevation} m
@@ -80,7 +81,7 @@ export default function PlanDetails({ planData, hasSchedule, generatingWorkouts,
 
             <View style={styles.infoGrid}>
               <View style={styles.infoItem}>
-                <Ionicons name="calendar-outline" size={20} color="#FF6B35" />
+                <Ionicons name="calendar-outline" size={20} color={colors.accent} />
                 <Text style={styles.infoLabel}>Fréquence</Text>
                 <Text style={styles.infoValue}>
                   {getLabel('frequency', planData.frequency)}/sem
@@ -88,7 +89,7 @@ export default function PlanDetails({ planData, hasSchedule, generatingWorkouts,
               </View>
 
               <View style={styles.infoItem}>
-                <Ionicons name="time-outline" size={20} color="#FF6B35" />
+                <Ionicons name="time-outline" size={20} color={colors.accent} />
                 <Text style={styles.infoLabel}>Durée</Text>
                 <Text style={styles.infoValue}>
                   {planData.duration} sem.
@@ -99,7 +100,7 @@ export default function PlanDetails({ planData, hasSchedule, generatingWorkouts,
             </View>
 
             <View style={styles.dateSection}>
-              <Ionicons name="checkmark-circle" size={16} color="#666" />
+              <Ionicons name="checkmark-circle" size={16} color={colors.textMuted} />
               <Text style={styles.dateText}>
                 Créé le {new Date(planData.createdAt).toLocaleDateString('fr-FR', {
                   day: 'numeric',
@@ -110,7 +111,7 @@ export default function PlanDetails({ planData, hasSchedule, generatingWorkouts,
             </View>
 
             <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
-              <Ionicons name="trash-outline" size={20} color="#FF6B35" />
+              <Ionicons name="trash-outline" size={20} color={colors.error} />
               <Text style={styles.deleteButtonText}>Supprimer le plan</Text>
             </TouchableOpacity>
           </>
@@ -124,9 +125,9 @@ export default function PlanDetails({ planData, hasSchedule, generatingWorkouts,
           disabled={generatingWorkouts}
         >
           {generatingWorkouts ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size="small" color={colors.textInverse} />
           ) : (
-            <Ionicons name="sparkles-outline" size={20} color="#fff" />
+            <Ionicons name="sparkles-outline" size={20} color={colors.textInverse} />
           )}
           <Text style={styles.createNewButtonText}>
             {generatingWorkouts ? 'Génération...' : 'Generer les Scéances'}
@@ -139,95 +140,103 @@ export default function PlanDetails({ planData, hasSchedule, generatingWorkouts,
 
 const styles = StyleSheet.create({
   compactCard: {
-    backgroundColor: 'rgba(45, 45, 45, 0.7)',
-    padding: 20,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: 'rgba(252, 76, 2, 0.2)',
+    backgroundColor: colors.card,
+    padding: spacing.xl,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadows.sm,
   },
   courseTitleSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing.md,
   },
   courseTitle: {
-    fontSize: 22,
-    color: '#ffffff',
-    fontWeight: 'bold',
+    fontSize: fonts.sizes.xl,
+    fontFamily: fonts.family,
+    color: colors.text,
+    fontWeight: fonts.weights.bold,
     flex: 1,
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(252, 76, 2, 0.2)',
-    marginTop: 15,
-    marginBottom: 15,
+    backgroundColor: colors.border,
+    marginTop: spacing.lg,
+    marginBottom: spacing.lg,
   },
   infoGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 15,
+    marginBottom: spacing.lg,
   },
   infoItem: {
     flex: 1,
     alignItems: 'center',
-    gap: 6,
+    gap: spacing.xs,
   },
   infoLabel: {
-    fontSize: 12,
-    color: '#b0b0b0',
-    fontWeight: '500',
+    fontSize: fonts.sizes.sm,
+    fontFamily: fonts.family,
+    color: colors.textSecondary,
+    fontWeight: fonts.weights.medium,
   },
   infoValue: {
-    fontSize: 16,
-    color: '#ffffff',
-    fontWeight: '600',
+    fontSize: fonts.sizes.lg,
+    fontFamily: fonts.family,
+    color: colors.text,
+    fontWeight: fonts.weights.semibold,
     textAlign: 'center',
   },
   dateSection: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    paddingTop: 10,
+    gap: spacing.xs,
+    paddingTop: spacing.md,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(252, 76, 2, 0.1)',
+    borderTopColor: colors.borderLight,
   },
   dateText: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: fonts.sizes.sm,
+    fontFamily: fonts.family,
+    color: colors.textMuted,
   },
   createNewButton: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(252, 76, 2, 0.9)',
-    paddingHorizontal: 25,
-    paddingVertical: 15,
-    borderRadius: 10,
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.xxl,
+    paddingVertical: spacing.lg,
+    borderRadius: borderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 30,
-    gap: 10,
+    marginTop: spacing.xxxl,
+    gap: spacing.md,
+    ...shadows.md,
   },
   buttonDisabled: {
     opacity: 0.5,
   },
   createNewButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    color: colors.textInverse,
+    fontSize: fonts.sizes.lg,
+    fontFamily: fonts.family,
+    fontWeight: fonts.weights.semibold,
   },
   deleteButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 12,
-    marginTop: 15,
+    gap: spacing.sm,
+    paddingVertical: spacing.md,
+    marginTop: spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(252, 76, 2, 0.2)',
+    borderTopColor: colors.borderLight,
   },
   deleteButtonText: {
-    color: '#FF6B35',
-    fontSize: 14,
-    fontWeight: '600',
+    color: colors.error,
+    fontSize: fonts.sizes.md,
+    fontFamily: fonts.family,
+    fontWeight: fonts.weights.semibold,
   },
 });

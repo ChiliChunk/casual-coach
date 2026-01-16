@@ -6,6 +6,7 @@ import { StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import StravaProfileScreen from './screens/StravaProfileScreen';
 import PlanScreen from './screens/PlanScreen';
+import { colors, fonts } from './constants/theme';
 
 export type RootStackParamList = {
   MainTabs: undefined;
@@ -36,19 +37,20 @@ function MainTabs() {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#FF6B35',
-        tabBarInactiveTintColor: '#666',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: {
-          backgroundColor: 'rgba(45, 45, 45, 0.95)',
-          borderTopColor: 'rgba(252, 76, 2, 0.3)',
+          backgroundColor: colors.card,
+          borderTopColor: colors.border,
           borderTopWidth: 1,
         },
         headerStyle: {
-          backgroundColor: 'rgba(26, 26, 26, 0.98)',
+          backgroundColor: colors.background,
         },
-        headerTintColor: '#FF6B35',
+        headerTintColor: colors.text,
         headerTitleStyle: {
-          fontWeight: 'bold',
+          fontWeight: fonts.weights.bold,
+          fontFamily: fonts.family,
         },
       })}
     >
@@ -69,17 +71,18 @@ function MainTabs() {
 export default function App() {
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor="#1a1a1a" translucent={false} />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.background} translucent={false} />
       <NavigationContainer>
       <Stack.Navigator
         initialRouteName="MainTabs"
         screenOptions={{
           headerStyle: {
-            backgroundColor: 'rgba(26, 26, 26, 0.98)',
+            backgroundColor: colors.background,
           },
-          headerTintColor: '#FF6B35',
+          headerTintColor: colors.text,
           headerTitleStyle: {
-            fontWeight: 'bold',
+            fontWeight: fonts.weights.bold,
+            fontFamily: fonts.family,
           },
         }}
       >

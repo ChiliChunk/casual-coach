@@ -7,6 +7,7 @@ import TrainingActivities from '../components/TrainingActivities';
 import { storageService, TrainingPlan, TrainingSchedule } from '../services/storageService';
 import { API_CONFIG } from '../config/api.config';
 import stravaService from '../services/stravaService';
+import { colors, fonts, spacing, borderRadius, shadows } from '../constants/theme';
 
 export default function PlanScreen() {
   const [hasPlan, setHasPlan] = useState(false);
@@ -170,7 +171,7 @@ export default function PlanScreen() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#FF6B35" />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -179,14 +180,14 @@ export default function PlanScreen() {
     return (
       <View style={styles.container}>
         <View style={styles.emptyContent}>
-          <AntDesign name="frown" size={80} color="#666" />
+          <AntDesign name="frown" size={80} color={colors.textMuted} />
           <Text style={styles.emptyTitle}>Aucun plan d'entraînement</Text>
           <Text style={styles.emptySubtitle}>
             Créez votre premier plan pour commencer
           </Text>
         </View>
         <TouchableOpacity style={styles.createButton} onPress={handleCreatePlan}>
-          <Ionicons name="add-circle-outline" size={24} color="#fff" />
+          <Ionicons name="add-circle-outline" size={24} color={colors.textInverse} />
           <Text style={styles.createButtonText}>Créer un plan</Text>
         </TouchableOpacity>
       </View>
@@ -222,9 +223,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#1a1a1a',
-    padding: 20,
-    paddingBottom: 40,
+    backgroundColor: colors.background,
+    padding: spacing.xl,
+    paddingBottom: spacing.xxxl,
   },
   emptyContent: {
     flex: 1,
@@ -233,48 +234,47 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: colors.background,
   },
   planContainer: {
-    padding: 20,
-    paddingTop: 20,
+    padding: spacing.xl,
+    paddingTop: spacing.xl,
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: colors.background,
   },
   emptyTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginTop: 20,
-    marginBottom: 10,
+    fontSize: fonts.sizes.xxl,
+    fontWeight: fonts.weights.bold,
+    fontFamily: fonts.family,
+    color: colors.text,
+    marginTop: spacing.xl,
+    marginBottom: spacing.md,
   },
   emptySubtitle: {
-    fontSize: 16,
-    color: '#b0b0b0',
+    fontSize: fonts.sizes.lg,
+    fontFamily: fonts.family,
+    color: colors.textSecondary,
     textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: spacing.xxxl,
   },
   createButton: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(252, 76, 2, 0.9)',
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 10,
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.xxxl,
+    paddingVertical: spacing.lg,
+    borderRadius: borderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 3,
-    shadowColor: '#FC4C02',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 3.84,
     width: '90%',
+    ...shadows.md,
   },
   createButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-    marginLeft: 10,
+    color: colors.textInverse,
+    fontSize: fonts.sizes.xl,
+    fontFamily: fonts.family,
+    fontWeight: fonts.weights.semibold,
+    marginLeft: spacing.md,
   },
 });
