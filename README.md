@@ -91,3 +91,10 @@ Voir [test-connection.md](test-connection.md) pour un guide détaillé.
 - [Migration Strava](MIGRATION_STRAVA.md) - Détails sur l'architecture de sécurité Strava
 - [Test de connexion](test-connection.md) - Guide pour connecter Expo Go au backend
 - [Dépannage](TROUBLESHOOTING.md) - Solutions aux erreurs courantes
+
+## Build
+
+### Build Android avec EAS
+```bash
+cd Frontend
+eas build --profile preview --platform android
