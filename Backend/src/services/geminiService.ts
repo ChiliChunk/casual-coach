@@ -68,6 +68,7 @@ class GeminiService {
   private generatePrompt(planData: TrainingPlanInput): string {
     const courseTypeLabel = planData.course_type === 'road_running' ? 'course sur route' : 'trail';
     const activitiesText = planData.activities ? JSON.stringify(planData.activities) : '';
+    const userPresentation = planData.user_presentation || '';
 
     return this.promptTemplate
       .replace(/\{\{course_label\}\}/g, planData.course_label)
@@ -77,6 +78,7 @@ class GeminiService {
       .replace(/\{\{frequency\}\}/g, planData.frequency)
       .replace(/\{\{duration\}\}/g, planData.duration)
       .replace(/\{\{course_type_value\}\}/g, planData.course_type)
+      .replace(/\{\{user_presentation\}\}/g, userPresentation)
       .replace(/\{\{activities\}\}/g, activitiesText);
   }
 

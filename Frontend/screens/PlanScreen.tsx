@@ -124,7 +124,7 @@ export default function PlanScreen() {
           user_presentation: planData.user_presentation,
           userId,
         }
-      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TRAINING.GENERATE}`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TRAINING.MOCK}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

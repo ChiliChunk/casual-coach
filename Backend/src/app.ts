@@ -25,6 +25,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(`/api/${config.apiVersion}`, routes);
 
+app.get('/favicon.ico', (_req, res) => res.status(204).end());
+
 app.use(notFound);
 app.use(errorHandler);
 
