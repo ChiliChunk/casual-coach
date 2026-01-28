@@ -72,12 +72,13 @@ class StravaService {
   /**
    * Échange le code d'autorisation contre des tokens d'accès
    */
-  async exchangeCodeForToken(code: string): Promise<StravaTokenResponse> {
+  async exchangeCodeForToken(code: string, redirectUri: string): Promise<StravaTokenResponse> {
     try {
       console.log('Exchanging code for token...');
       console.log('Code:', code);
       console.log('Client ID:', stravaConfig.clientId);
-      
+      console.log('Redirect URI:', redirectUri);
+
       const response = await axios.post<StravaTokenResponse>(
         stravaConfig.tokenEndpoint,
         {
@@ -85,6 +86,7 @@ class StravaService {
           client_secret: stravaConfig.clientSecret,
           code: code,
           grant_type: 'authorization_code',
+          redirect_uri: redirectUri,
         }
       );
 

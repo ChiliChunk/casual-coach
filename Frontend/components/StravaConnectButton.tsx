@@ -102,7 +102,7 @@ export default function StravaConnectButton({ onAuthSuccess, onAuthError }: Prop
   const handleAuthorizationCode = async (code: string) => {
     setIsLoading(true);
     try {
-      const tokenResponse = await stravaService.exchangeCodeForToken(code);
+      const tokenResponse = await stravaService.exchangeCodeForToken(code, redirectUri);
       if (tokenResponse) {
         onAuthSuccess();
       } else {

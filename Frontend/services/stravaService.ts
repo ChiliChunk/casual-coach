@@ -102,7 +102,7 @@ class StravaService {
   /**
    * Échange le code d'autorisation contre des tokens via le backend
    */
-  async exchangeCodeForToken(code: string): Promise<AuthResponse | null> {
+  async exchangeCodeForToken(code: string, redirectUri: string): Promise<AuthResponse | null> {
     try {
       const userId = await this.getUserId();
 
@@ -110,6 +110,7 @@ class StravaService {
       const response = await axios.post<AuthResponse>(url, {
         code,
         userId,
+        redirectUri,
       });
 
       return response.data;

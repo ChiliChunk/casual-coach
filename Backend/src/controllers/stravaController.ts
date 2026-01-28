@@ -19,11 +19,12 @@ export const getConfig = async (_req: Request, res: Response, next: NextFunction
  */
 export const exchangeToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { code, userId } = req.body;
+    const { code, userId, redirectUri } = req.body;
 
     console.log('Exchange token request received');
     console.log('User ID:', userId);
     console.log('Code received:', code ? 'Yes' : 'No');
+    console.log('Redirect URI:', redirectUri);
 
     if (!code) {
       res.status(400).json({ error: 'Authorization code is required' });
@@ -35,7 +36,12 @@ export const exchangeToken = async (req: Request, res: Response, next: NextFunct
       return;
     }
 
-    const tokenResponse = await stravaService.exchangeCodeForToken(code);
+    if (!redirectUri) {
+      res.status(400).json({ error: 'Redirect URI is required' });
+      return;
+    }
+
+    const tokenResponse = await stravaService.exchangeCodeForToken(code, redirectUri);
 
     tokenStorage.set(userId, {
       accessToken: tokenResponse.access_token,
