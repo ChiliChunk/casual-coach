@@ -1,11 +1,191 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Casual Coach - Training App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif', serif;
+            background: linear-gradient(135deg, #FAF8F5 0%, #F5F2ED 100%);
+            color: #2D2D2D;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 48px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(107, 123, 107, 0.15);
+            animation: scaleIn 0.6s ease-out;
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 700;
+            color: #6B7B6B;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #6B6B6B;
+            font-weight: 400;
+        }
+
+        .qr-section {
+            background: #FFFFFF;
+            border: 1px solid #E8E4DE;
+            border-radius: 20px;
+            padding: 48px;
+            box-shadow: 0 4px 16px rgba(107, 123, 107, 0.1);
+            margin-bottom: 32px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .qr-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2D2D2D;
+            margin-bottom: 24px;
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+        }
+
+        #qrcode canvas,
+        #qrcode img {
+            border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(107, 123, 107, 0.1);
+        }
+
+        .footer {
+            color: #9A9A9A;
+            font-size: 14px;
+            animation: fadeIn 1s ease-out 0.4s both;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .qr-section {
+                padding: 32px 24px;
+            }
+
+            .logo {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
 </head>
 <body>
-    toto est content
+    <div class="container">
+        <div class="header">
+            <img src="../Frontend/assets/icon.png" alt="AI Coach Logo" class="logo">
+            <h1>AI Coach</h1>
+            <p class="subtitle">Your Personal Training Assistant</p>
+        </div>
+
+        <div class="qr-section">
+            <h2 class="qr-title">Scan to Download</h2>
+            <div id="qrcode"></div>
+        </div>
+
+        <div class="footer">
+            <p>Powered by AI · Strava Integration</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        new QRCode(document.getElementById("qrcode"), {
+            text: "https://google.com",
+            width: 280,
+            height: 280,
+            colorDark: "#6B7B6B",
+            colorLight: "#FFFFFF",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    </script>
 </body>
 </html>
