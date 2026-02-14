@@ -146,6 +146,8 @@ export default function StravaConnectButton({ onAuthSuccess, onAuthError }: Prop
   return (
     <View style={styles.container}>
       <Text style={styles.subtitle}>Connectez-vous à Strava pour un plan d'entraînement personnalisé</Text>
+      <Text style={styles.debugText}>Return URI: {getReturnUri()}</Text>
+      <Text style={styles.debugText}>Redirect URI: {REDIRECT_URI}</Text>
 
       <TouchableOpacity
         style={[styles.button, (isLoading || !stravaConfig) && styles.buttonDisabled]}
@@ -211,6 +213,13 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.6,
+  },
+  debugText: {
+    fontSize: fonts.sizes.xs,
+    fontFamily: fonts.family,
+    color: colors.textMuted,
+    marginBottom: spacing.sm,
+    textAlign: 'center',
   },
   buttonText: {
     color: colors.textInverse,
