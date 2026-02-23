@@ -10,9 +10,10 @@ interface PlanDetailsProps {
   generatingWorkouts: boolean;
   onGenerateWorkouts: () => void;
   onDelete: () => void;
+  onExport: () => void;
 }
 
-export default function PlanDetails({ planData, hasSchedule, generatingWorkouts, onGenerateWorkouts, onDelete }: PlanDetailsProps) {
+export default function PlanDetails({ planData, hasSchedule, generatingWorkouts, onGenerateWorkouts, onDelete, onExport }: PlanDetailsProps) {
   const [isPlanExpanded, setIsPlanExpanded] = useState(!hasSchedule);
   const [contentHeight, setContentHeight] = useState(0);
   const expandAnimation = useRef(new Animated.Value(isPlanExpanded ? 1 : 0)).current;
@@ -102,10 +103,20 @@ export default function PlanDetails({ planData, hasSchedule, generatingWorkouts,
           })}
         </Text>
       </View>
-      <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
-        <Ionicons name="trash-outline" size={20} color={colors.error} />
-        <Text style={styles.deleteButtonText}>Supprimer le plan</Text>
-      </TouchableOpacity>
+      <View style={styles.actionRow}>
+        <TouchableOpacity
+          style={[styles.exportButton, !hasSchedule && styles.buttonDisabled]}
+          onPress={onExport}
+          disabled={!hasSchedule}
+        >
+          <Ionicons name="share-outline" size={20} color={hasSchedule ? colors.textSecondary : colors.textMuted} />
+          <Text style={[styles.exportButtonText, !hasSchedule && styles.exportButtonTextDisabled]}>Exporter</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
+          <Ionicons name="trash-outline" size={20} color={colors.error} />
+          <Text style={styles.deleteButtonText}>Supprimer</Text>
+        </TouchableOpacity>
+      </View>
     </>
   );
 
@@ -249,15 +260,44 @@ const styles = StyleSheet.create({
     fontFamily: fonts.family,
     fontWeight: fonts.weights.semibold,
   },
-  deleteButton: {
+  actionRow: {
+    flexDirection: 'row',
+    marginTop: spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: colors.borderLight,
+    paddingTop: spacing.md,
+    gap: spacing.md,
+  },
+  exportButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.sm,
     paddingVertical: spacing.md,
-    marginTop: spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: colors.borderLight,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: borderRadius.sm,
+  },
+  exportButtonText: {
+    color: colors.textSecondary,
+    fontSize: fonts.sizes.md,
+    fontFamily: fonts.family,
+    fontWeight: fonts.weights.semibold,
+  },
+  exportButtonTextDisabled: {
+    color: colors.textMuted,
+  },
+  deleteButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.error,
+    borderRadius: borderRadius.sm,
   },
   deleteButtonText: {
     color: colors.error,

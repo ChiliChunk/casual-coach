@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons, AntDesign } from '@expo/vector-icons';
+import { File, Paths } from 'expo-file-system';
+import { StorageAccessFramework, writeAsStringAsync } from 'expo-file-system/legacy';
+import * as DocumentPicker from 'expo-document-picker';
 import CreatePlanForm from '../components/CreatePlanForm';
 import PlanDetails from '../components/PlanDetails';
 import TrainingActivities from '../components/TrainingActivities';
@@ -99,6 +102,63 @@ export default function PlanScreen() {
         }
       },
     });
+  };
+
+  const handleExportPlan = async () => {
+    if (!planData) return;
+    try {
+      const exportData = {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        plan: planData,
+        sessions: trainingSchedule ?? null,
+      };
+      const safeName = planData.course_label.replace(/[^a-zA-Z0-9]/g, '_');
+      const fileName = `plan_${safeName}.json`;
+      const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
+      if (!permissions.granted) return;
+      const uri = await StorageAccessFramework.createFileAsync(permissions.directoryUri, fileName, 'application/json');
+      await writeAsStringAsync(uri, JSON.stringify(exportData, null, 2));
+      showPopup({ type: 'success', title: 'Plan exporté', message: `"${fileName}" a été sauvegardé.` });
+    } catch {
+      showPopup({ type: 'error', title: 'Erreur', message: "Impossible d'exporter le plan" });
+    }
+  };
+
+  const handleImportPlan = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({ type: 'application/json', copyToCacheDirectory: true });
+      if (result.canceled) return;
+      const content = await new File(result.assets[0].uri).text();
+      const data = JSON.parse(content);
+      if (!data.version || !data.plan || !data.plan.course_label) {
+        showPopup({ type: 'error', title: 'Fichier invalide', message: 'Ce fichier ne contient pas un plan valide.' });
+        return;
+      }
+      const doImport = async () => {
+        await storageService.saveTrainingPlan(data.plan);
+        if (data.sessions) {
+          await storageService.saveTrainingSessions(data.sessions);
+        }
+        await loadPlan();
+        hidePopup();
+        showPopup({ type: 'success', title: 'Plan importé', message: `Le plan "${data.plan.course_label}" a été importé avec succès.` });
+      };
+      if (hasPlan) {
+        showPopup({
+          type: 'warning',
+          title: 'Remplacer le plan',
+          message: 'Un plan existe déjà. Voulez-vous le remplacer par le plan importé ?',
+          showCancel: true,
+          confirmText: 'Remplacer',
+          onConfirm: doImport,
+        });
+      } else {
+        await doImport();
+      }
+    } catch {
+      showPopup({ type: 'error', title: 'Erreur', message: "Impossible d'importer le fichier." });
+    }
   };
 
   const handleGenerateWorkouts = async () => {
@@ -225,6 +285,10 @@ export default function PlanScreen() {
           <Ionicons name="add-circle-outline" size={24} color={colors.textInverse} />
           <Text style={styles.createButtonText}>Créer un plan</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.importButton} onPress={handleImportPlan}>
+          <Ionicons name="download-outline" size={24} color={colors.textSecondary} />
+          <Text style={styles.importButtonText}>Importer un plan</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -240,6 +304,7 @@ export default function PlanScreen() {
               generatingWorkouts={generatingWorkouts}
               onGenerateWorkouts={handleGenerateWorkouts}
               onDelete={handleDeletePlan}
+              onExport={handleExportPlan}
             />
           )}
 
@@ -321,6 +386,25 @@ const styles = StyleSheet.create({
   },
   createButtonText: {
     color: colors.textInverse,
+    fontSize: fonts.sizes.xl,
+    fontFamily: fonts.family,
+    fontWeight: fonts.weights.semibold,
+    marginLeft: spacing.md,
+  },
+  importButton: {
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: spacing.xxxl,
+    paddingVertical: spacing.lg,
+    borderRadius: borderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '90%',
+    marginTop: spacing.md,
+  },
+  importButtonText: {
+    color: colors.textSecondary,
     fontSize: fonts.sizes.xl,
     fontFamily: fonts.family,
     fontWeight: fonts.weights.semibold,
